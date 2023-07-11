@@ -1,3 +1,5 @@
+#pragma GCC optimize ("O2")
+
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdint.h>
@@ -111,18 +113,3 @@ int64_t bitoi(bigInt num);
 int bi_printf(const char* format, ...);
 int bi_formulaf(bigInt dest, const char* format, ...);
 
-#ifdef __aarch64__
-#define ADD_OVERFLOW(a, b, overflowed) \
-__asm__ __volatile__ (  \
-                      "adds x0, %1, %2\n" \
-                      "str x0, [%1]\n"  \
-                      "cset %0, cs\n" \
-                      : "=r" (overflowed) \
-                      : "r" (&a), "r" (&b)  \
-                      : "x0", "cc"  \
-                      );
-#define SHL_OVERFLOW(a, b, overflowed) \
-__asm__ __volatile__ (  \
-""
-)
-#endif

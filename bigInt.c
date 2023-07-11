@@ -20,13 +20,5 @@ bigInt bigInt_destroy(bigInt num)
 // +
 int bigInt_add(bigInt a, bigInt b, bigInt dest)
 {
-  __asm__ __volatile__
-    (
-    "adds x0, %1, %2\n"
-    "str x0, [%1]\n"
-    "cset %0, cs\n"
-    : "=r" (overflowed)
-    : "r" (&a), "r" (&b)
-    : "x0", "cc"
-  );
+
 }
