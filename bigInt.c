@@ -1,6 +1,7 @@
 #include <malloc.h>
 #include <memory.h>
 #include <stdlib.h>
+#include <limits.h>
 #include "bigInt.h"
 
 bigUInt_t* bigUInt_init()
@@ -40,7 +41,28 @@ bigUInt_t* bigUInt_resize(bigUInt_t* a, uint64_t size)
 /* Arithmetic Operators */
 
 // +
-int bigUInt_add(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
+void bigUInt_add(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
+{
+  register uint64_t _max_len = MAX_TRIPLE((*a)->len, (*b)->len, (*dest)->len);
+
+  if ((_max_len == (*a)->len) && ((*a)->nums[(*a)->len - 1] & 0xF000000000000000))
+    *a = bigUInt_resize(*a, _max_len+1);
+  if ((_max_len == (*b)->len) && ((*b)->nums[(*b)->len - 1] & 0xF000000000000000))
+    *b = bigUInt_resize(*b, _max_len+1);
+
+  if (_max_len > (*b)->len)
+    *b = bigUInt_resize(*b, _max_len);
+  if (_max_len > (*a)->len)
+    *a = bigUInt_resize(*a, _max_len);
+  if (_max_len > (*dest)->len)
+    *dest = bigUInt_resize(*dest, _max_len);
+  __bigUInt_add(_max_len, (*a)->nums, (*b)->nums, (*dest)->nums);
+}
+
+// -
+// !! DON'T USE !!
+// NOT DONE YET.
+void bigUInt_sub(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
 {
   register uint64_t _max_len = MAX_TRIPLE((*a)->len, (*b)->len, (*dest)->len);
   if (_max_len > (*b)->len)
@@ -49,7 +71,54 @@ int bigUInt_add(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
     *a = bigUInt_resize(*a, _max_len);
   if (_max_len > (*dest)->len)
     *dest = bigUInt_resize(*dest, _max_len);
-  __bigUInt_add(_max_len, (*a)->nums, (*b)->nums, (*dest)->nums);
+//  __bigUInt_sub(_max_len, (*a)->nums, (*b)->nums, (*dest)->nums);
+}
+
+// ++
+void bigUInt_inc(bigUInt_t** a)
+{
+  if ((*a)->nums[(*a)->len - 1] & 0xF000000000000000)
+    *a = bigUInt_resize(*a, (*a)->len+1);
+  __bigUInt_inc((*a)->len, (*a)->nums);
+}
+
+// --
+// NOT DONE YET.
+void bigUInt_dec(bigUInt_t** a)
+{
+  __bigUInt_dec((*a)->len, (*a)->nums);
+}
+
+// <<
+// NOT DONE YET.
+void bigUInt_bit_shl(bigUInt_t** a, uint64_t b)
+{
+  for (; b > 0; b--)
+    __bigUInt_shl((*a)->len, (*a)->nums);
+}
+// >>
+// NOT DONE YET.
+void bigUInt_bit_shr(bigUInt_t** a, uint64_t b)
+{
+  for (; b > 0; b--)
+    __bigUInt_shr((*a)->len, (*a)->nums);
+}
+
+// =
+void bigUInt_assign(bigUInt_t** a, bigUInt_t** b)
+{
+  memset((*a)->nums, 0, (*a)->len * 8);
+  if ((*a)->len < (*b)->len)
+  {
+    *a = bigUInt_resize(*a, (*b)->len);
+  }
+  memcpy((*a)->nums, (*b)->nums, (*b)->len * 8);
+}
+
+void bigUInt_assign_num(bigUInt_t** a, uint64_t b)
+{
+  memset((*a)->nums, 0, (*a)->len * 8);
+  (*a)->nums[0] = b;
 }
 
 int main()

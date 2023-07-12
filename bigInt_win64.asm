@@ -4,26 +4,25 @@
     clc
     
     xor rbx, rbx
-    _loop_nof:
+    _loop_ncf:
       cmp rbx, rcx
       je _end
       mov r10, [rdx+rbx*8]
       add r10, [r8+rbx*8]
       mov [r9+rbx*8], r10
       inc rbx
-      jc _loop_of
-      jmp _loop_nof
+      jc _loop_cf
+      jmp _loop_ncf
 
-    _loop_of:
+    _loop_cf:
       cmp rbx, rcx
       je _end
       mov r10, [rdx+rbx*8]
-      add r10, [r8+rbx*8]
-      inc r10
+      adc r10, [r8+rbx*8]
       mov [r9+rbx*8], r10
       inc rbx
-      jc _loop_of
-      jmp _loop_nof
+      jc _loop_cf
+      jmp _loop_ncf
 
     _end:
       mov r9, r11
