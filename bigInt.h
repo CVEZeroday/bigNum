@@ -38,78 +38,85 @@
   #define NOT_SUPPORTED_ARCHITECTURE
 #endif
 
-/* bigInt structure definition */
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#define MAX_TRIPLE(a, b, c) MAX((a), MAX((b), (c)))
+#define MIN_TRIPLE(a, b, c) MIN((a), MIN((b), (c)))
 
-typedef struct bigInt_s {
+/* bigUInt_t* structure definition */
+
+typedef struct bigUInt_s {
   uint64_t len;
-  int64_t head;
   uint64_t nums[];
-} bigInt_t;
-#define bigInt bigInt_t*
+} bigUInt_t;
 
-bigInt bigInt_init();
-bigInt bigInt_destroy(bigInt num);
+bigUInt_t* bigUInt_init();
+void bigUInt_destroy(bigUInt_t* num);
+void bigUInt_resize(bigUInt_t* a, long long size);
 
 /* Arithmetic Operators */
 
 // +
-int bigInt_add(bigInt a, bigInt b, bigInt dest);
+int bigUInt_add(bigUInt_t* a, bigUInt_t* b, bigUInt_t* dest);
 // -
-int bigInt_sub(bigInt a, bigInt b, bigInt dest);
+int bigUInt_sub(bigUInt_t* a, bigUInt_t* b, bigUInt_t* dest);
 // *
-int bigInt_mul(bigInt a, bigInt b, bigInt dest);
+int bigUInt_mul(bigUInt_t* a, bigUInt_t* b, bigUInt_t* dest);
 // /
-int bigInt_div(bigInt a, bigInt b, bigInt dest);
+int bigUInt_div(bigUInt_t* a, bigUInt_t* b, bigUInt_t* dest);
 // %
-int bigInt_mod(bigInt a, bigInt b, bigInt dest);
+int bigUInt_mod(bigUInt_t* a, bigUInt_t* b, bigUInt_t* dest);
 // ++
-int bigInt_inc(bigInt a);
+int bigUInt_inc(bigUInt_t* a);
 // --
-int bigInt_dec(bigInt a);
+int bigUInt_dec(bigUInt_t* a);
 
 /* Relational Operators */
 
 // ==
-bool bigInt_eq(bigInt a, bigInt b);
+bool bigUInt_eq(bigUInt_t* a, bigUInt_t* b);
 // !=
-bool bigInt_neq(bigInt a, bigInt b);
+bool bigUInt_neq(bigUInt_t* a, bigUInt_t* b);
 // >
-bool bigInt_greater(bigInt a, bigInt b);
+bool bigUInt_greater(bigUInt_t* a, bigUInt_t* b);
 // <
-bool bigInt_less(bigInt a, bigInt b);
+bool bigUInt_less(bigUInt_t* a, bigUInt_t* b);
 // >=
-bool bigInt_greater_eq(bigInt a, bigInt b);
+bool bigUInt_greater_eq(bigUInt_t* a, bigUInt_t* b);
 // <=
-bool bigInt_less_eq(bigInt a, bigInt b);
+bool bigUInt_less_eq(bigUInt_t* a, bigUInt_t* b);
 
 /* Logical Operators */
 
 // &&
-bool bigInt_and(bigInt a, bigInt b);
+bool bigUInt_and(bigUInt_t* a, bigUInt_t* b);
 // ||
-bool bigInt_or(bigInt a, bigInt b);
+bool bigUInt_or(bigUInt_t* a, bigUInt_t* b);
 // !
-bool bigInt_not(bigInt a);
+bool bigUInt_not(bigUInt_t* a);
 
 /* Bitwise Operators */
 
 // &
-int bigInt_bit_and(bigInt a, bigInt b, bigInt dest);
+int bigUInt_bit_and(bigUInt_t* a, bigUInt_t* b, bigUInt_t* dest);
 // |
-int bigInt_bit_or(bigInt a, bigInt b, bigInt dest);
+int bigUInt_bit_or(bigUInt_t* a, bigUInt_t* b, bigUInt_t* dest);
 // ^
-int bigInt_bit_xor(bigInt a, bigInt b, bigInt dest);
+int bigUInt_bit_xor(bigUInt_t* a, bigUInt_t* b, bigUInt_t* dest);
 // ~
-int bigInt_bit_not(bigInt a, bigInt b, bigInt dest);
+int bigUInt_bit_not(bigUInt_t* a, bigUInt_t* b, bigUInt_t* dest);
 // <<
-int bigInt_bit_shl(bigInt a, bigInt b, bigInt dest);
+int bigUInt_bit_shl(bigUInt_t* a, bigUInt_t* b, bigUInt_t* dest);
 // >>
-int bigInt_bit_shr(bigInt a, bigInt b, bigInt dest);
+int bigUInt_bit_shr(bigUInt_t* a, bigUInt_t* b, bigUInt_t* dest);
 
-int itobi(int64_t num, bigInt dest);
-char* bitostr(bigInt num);
-int64_t bitoi(bigInt num);
+int itobi(int64_t num, bigUInt_t* dest);
+char* bitostr(bigUInt_t* num);
+int64_t bitoi(bigUInt_t* num);
 
 int bi_printf(const char* format, ...);
-int bi_formulaf(bigInt dest, const char* format, ...);
+int bi_formulaf(bigUInt_t* dest, const char* format, ...);
 
+/* flag */
+#define CF 0b0000000000000001
+#define OF 0b0000100000000000

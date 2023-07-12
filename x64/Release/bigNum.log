@@ -1,0 +1,9 @@
+﻿  Assembling bigInt_win64.asm...
+  bigInt.c
+D:\bigNum\bigInt.h(1,9): warning C4068: unknown pragma 'GCC'
+D:\bigNum\bigInt.c(23,15): warning C4244: 'initializing': conversion from 'unsigned __int64' to 'int', possible loss of data
+D:\bigNum\bigInt.c(42,3): warning C4013: '__bigUInt_add' undefined; assuming extern returning int
+D:\bigNum\bigInt.c(43): warning C4716: 'bigUInt_add': must return a value
+LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/OPT:ICF' specification
+MSVCRT.lib(exe_winmain.obj) : error LNK2019: unresolved external symbol WinMain referenced in function "int __cdecl __scrt_common_main_seh(void)" (?__scrt_common_main_seh@@YAHXZ)
+D:\bigNum\x64\Release\bigNum.exe : fatal error LNK1120: 1 unresolved externals
