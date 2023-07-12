@@ -18,7 +18,8 @@
       cmp rbx, rcx
       je _end
       mov r10, [rdx+rbx*8]
-      adc r10, [r8+rbx*8]
+      add r10, [r8+rbx*8]
+      inc r10
       mov [r9+rbx*8], r10
       inc rbx
       jc _loop_of

@@ -43,7 +43,7 @@
 #define MAX_TRIPLE(a, b, c) MAX((a), MAX((b), (c)))
 #define MIN_TRIPLE(a, b, c) MIN((a), MIN((b), (c)))
 
-/* bigUInt_t* structure definition */
+/* bigUInt_s structure definition */
 
 typedef struct bigUInt_s {
   uint64_t len;
@@ -52,7 +52,7 @@ typedef struct bigUInt_s {
 
 bigUInt_t* bigUInt_init();
 void bigUInt_destroy(bigUInt_t* num);
-void bigUInt_resize(bigUInt_t* a, long long size);
+bigUInt_t* bigUInt_resize(bigUInt_t* a, uint64_t size);
 
 /* Arithmetic Operators */
 
@@ -116,7 +116,3 @@ int64_t bitoi(bigUInt_t* num);
 
 int bi_printf(const char* format, ...);
 int bi_formulaf(bigUInt_t* dest, const char* format, ...);
-
-/* flag */
-#define CF 0b0000000000000001
-#define OF 0b0000100000000000

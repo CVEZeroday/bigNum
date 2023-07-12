@@ -1,6 +1,8 @@
 ﻿  bigInt.c
 D:\bigNum\bigInt.h(1,9): warning C4068: unknown pragma 'GCC'
-D:\bigNum\bigInt.c(22,44): warning C4028: formal parameter 2 different from declaration
-D:\bigNum\bigInt.c(42,3): warning C4013: '__bigUInt_add' undefined; assuming extern returning int
-D:\bigNum\bigInt.c(43): warning C4716: 'bigUInt_add': must return a value
+D:\bigNum\bigInt.c(43,29): warning C4028: formal parameter 1 different from declaration
+D:\bigNum\bigInt.c(43,44): warning C4028: formal parameter 2 different from declaration
+D:\bigNum\bigInt.c(43,59): warning C4028: formal parameter 3 different from declaration
+D:\bigNum\bigInt.c(52,3): warning C4013: '__bigUInt_add' undefined; assuming extern returning int
+D:\bigNum\bigInt.c(53): warning C4716: 'bigUInt_add': must return a value
   bigNum.vcxproj -> D:\bigNum\x64\Debug\bigNum.exe
