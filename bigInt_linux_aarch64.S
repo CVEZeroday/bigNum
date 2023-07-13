@@ -1,6 +1,6 @@
-.global __bigUInt_add, __bigUInt_inc, __bigUInt_dec
+.global __bigUInt_add, __bigUInt_sub, __bigUInt_inc, __bigUInt_dec
 .type __bigUInt_add, %function
-//.type __bigUInt_sub, %function
+.type __bigUInt_sub, %function
 .type __bigUInt_inc, %function
 .type __bigUInt_dec, %function
 
@@ -58,7 +58,7 @@ _loop_cf_sub:
   b.eq _end_sub
   ldr x11, [x1, x10, LSL #3]
   ldr x12, [x2, x10, LSL #3]
-  adds x11, x11, x12
+  subs x11, x11, x12
   add x11, x11, #1
   str x11, [x3, x10, LSL #3]
   add x10, x10, #1
@@ -70,7 +70,7 @@ _end_sub:
   mov x0, xzr
   ret
 
-.size __bigUInt_add, .-__bigUInt_add
+.size __bigUInt_sub, .-__bigUInt_sub
 
 __bigUInt_inc:
   mov x10, xzr

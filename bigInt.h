@@ -70,9 +70,9 @@ void bigUInt_sub(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest);
 // *
 void bigUInt_mul(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest);
 // /
-int bigUInt_div(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest);
+void bigUInt_div(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest);
 // %
-int bigUInt_mod(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest);
+void bigUInt_mod(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest);
 // ++
 void bigUInt_inc(bigUInt_t** a);
 // --

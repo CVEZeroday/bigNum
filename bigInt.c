@@ -59,7 +59,6 @@ void bigUInt_add(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
 }
 
 // -
-// !! DON'T USE !!
 // NOT DONE YET.
 void bigUInt_sub(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
 {
@@ -70,9 +69,10 @@ void bigUInt_sub(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
     *a = bigUInt_resize(*a, _max_len);
   if (_max_len > (*dest)->len)
     *dest = bigUInt_resize(*dest, _max_len);
-//  __bigUInt_sub(_max_len, (*a)->nums, (*b)->nums, (*dest)->nums);
+  __bigUInt_sub(_max_len, (*a)->nums, (*b)->nums, (*dest)->nums);
 }
-
+// *
+// NOT DONE YET.
 void bigUInt_mul(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
 {
     // (*a)->nums[0] & 0x1
@@ -87,20 +87,118 @@ void bigUInt_mul(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
     bigUInt_bit_shl(a, 1);
    
 }
+// /
+// NOT DONE YET.
+void bigUInt_div(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
+{
+
+}
+// %
+// NOT DONE YET.
+void bigUInt_mod(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
+{
+
+}
 
 // ++
 void bigUInt_inc(bigUInt_t** a)
 {
   if ((*a)->nums[(*a)->len - 1] & 0xF000000000000000)
     *a = bigUInt_resize(*a, (*a)->len+1);
-  //__bigUInt_inc((*a)->len, (*a)->nums);
+  __bigUInt_inc((*a)->len, (*a)->nums);
 }
 
 // --
-// NOT DONE YET.
 void bigUInt_dec(bigUInt_t** a)
 {
-  //__bigUInt_dec((*a)->len, (*a)->nums);
+  __bigUInt_dec((*a)->len, (*a)->nums);
+}
+
+/* Relational Operators */
+
+// ==
+bool bigUInt_eq(bigUInt_t** a, bigUInt_t** b)
+{
+  uint64_t _max_len = MAX((*a)->len, (*b)->len);
+  for (uint64_t i = 0; i < _max_len; i++)
+  {
+    register uint64_t __a = 0;
+    register uint64_t __b = 0;
+    if (i < (*a)->len) __a = (*a)->nums[i];
+    if (i < (*b)->len) __b = (*b)->nums[i];
+    if (__a != __b)
+      return 0;
+  }
+  return 1;
+}
+// !=
+bool bigUInt_neq(bigUInt_t** a, bigUInt_t** b)
+{
+  return !bigUInt_eq(a, b);
+}
+// >
+bool bigUInt_greater(bigUInt_t** a, bigUInt_t** b)
+{
+  uint64_t _max_len = MAX((*a)->len, (*b)->len);
+  for (uint64_t i = 0; i < _max_len; i++)
+  {
+    register uint64_t __a = 0;
+    register uint64_t __b = 0;
+    if (i < (*a)->len) __a = (*a)->nums[i];
+    if (i < (*b)->len) __b = (*b)->nums[i];
+    if (__a == __b) continue;
+    if (__a > __b) return 1;
+    if (__a < __b) return 0;
+  }
+  return 0;
+}
+// <
+bool bigUInt_less(bigUInt_t** a, bigUInt_t** b)
+{
+  uint64_t _max_len = MAX((*a)->len, (*b)->len);
+  for (uint64_t i = 0; i < _max_len; i++)
+  {
+    register uint64_t __a = 0;
+    register uint64_t __b = 0;
+    if (i < (*a)->len) __a = (*a)->nums[i];
+    if (i < (*b)->len) __b = (*b)->nums[i];
+    if (__a == __b) continue;
+    if (__a < __b) return 1;
+    if (__a > __b) return 0;
+  }
+  return 0;
+}
+// >=
+bool bigUInt_greater_eq(bigUInt_t** a, bigUInt_t** b)
+{
+  uint64_t _max_len = MAX((*a)->len, (*b)->len);
+  for (uint64_t i = 0; i < _max_len; i++)
+  {
+    register uint64_t __a = 0;
+    register uint64_t __b = 0;
+    if (i < (*a)->len) __a = (*a)->nums[i];
+    if (i < (*b)->len) __b = (*b)->nums[i];
+    if (__a == __b) continue;
+    if (__a > __b) return 1;
+    if (__a < __b) return 0;
+  }
+  return 1;
+}
+// <=
+bool bigUInt_less_eq(bigUInt_t** a, bigUInt_t** b)
+{
+  uint64_t _max_len = MAX((*a)->len, (*b)->len);
+  for (uint64_t i = 0; i < _max_len; i++)
+  {
+    register uint64_t __a = 0;
+    register uint64_t __b = 0;
+    if (i < (*a)->len) __a = (*a)->nums[i];
+    if (i < (*b)->len) __b = (*b)->nums[i];
+    if (__a == __b) continue;
+    if (__a < __b) return 1;
+    if (__a > __b) return 0;
+  }
+  return 1;
 }
 
 /* Logical Operators */
@@ -169,15 +267,11 @@ void bigUInt_bit_not(bigUInt_t** a, bigUInt_t** dest)
 // NOT DONE YET.
 void bigUInt_bit_shl(bigUInt_t** a, uint64_t b)
 {
-  for (; b > 0; b--);
-//    __bigUInt_shl((*a)->len, (*a)->nums);
 }
 // >>
 // NOT DONE YET.
 void bigUInt_bit_shr(bigUInt_t** a, uint64_t b)
 {
-  for (; b > 0; b--);
-//    __bigUInt_shr((*a)->len, (*a)->nums);
 }
 
 // =
@@ -220,7 +314,8 @@ int main()
       a = c >> n;
       b = c ^ (a << n);
     }
-    if ((a + b) & (1 << n)) carry = 1;
+    if((res & 0x2) == 0) res = 0;
+    if ((a + res) & (1 << n)) carry = 1;
     else carry = 0;
     a >>= 1;
     c = (a << n) ^ b;
@@ -232,6 +327,16 @@ int main()
 
 
   printf("%llu\n", c);
-
+/*
+  bigUInt_t* a = bigUInt_init();
+  bigUInt_t* b = bigUInt_init();
+  a = bigUInt_resize(a, 3);
+  b = bigUInt_resize(b, 2);
+  a->nums[0] = 0b0101;
+  a->nums[1] = 0b1001;
+  b->nums[0] = 0b0101;
+  b->nums[1] = 0b1001;
+  printf("%d\n", bigUInt_and(&a, &b));
+*/
   return 0;
 }
