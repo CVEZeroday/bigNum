@@ -73,34 +73,19 @@ void bigUInt_sub(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
 //  __bigUInt_sub(_max_len, (*a)->nums, (*b)->nums, (*dest)->nums);
 }
 
-void bigUInt_mul(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
-{
-    // (*a)->nums[0] & 0x1
-    // if((*b)->nums[0] & 0x1 == 1)
-    // dest = a + b;
-    // a << 1;
-    // else if((*b)->nums[0] & 0x1 == 0)
-    // a << 1;
-
-
-    bigUInt_add(a, b, dest); 
-    bigUInt_bit_shl(a, 1);
-   
-}
-
 // ++
 void bigUInt_inc(bigUInt_t** a)
 {
   if ((*a)->nums[(*a)->len - 1] & 0xF000000000000000)
     *a = bigUInt_resize(*a, (*a)->len+1);
-  //__bigUInt_inc((*a)->len, (*a)->nums);
+  __bigUInt_inc((*a)->len, (*a)->nums);
 }
 
 // --
 // NOT DONE YET.
 void bigUInt_dec(bigUInt_t** a)
 {
-  //__bigUInt_dec((*a)->len, (*a)->nums);
+  __bigUInt_dec((*a)->len, (*a)->nums);
 }
 
 /* Logical Operators */
@@ -203,30 +188,25 @@ void bigUInt_assign_num(bigUInt_t** a, uint64_t b)
 
 int main()
 {
-  unsigned long long a, b, c, res, carry, n;
-  a = 13; b = 11, n=4;
-  res = b;
-  a <<= n;
-  c = a ^ b;
-  for(int i=0; i<=3; i++){
-    if ((res & 0x1) == 1)
-    {
-      c >>= 1;
-      a = c >> n;
-      b = c ^ (a << n);
-    }
-    else if ((res & 0x1) == 0)
-    {
-      a >>= 1;
-    }
-  }
+  bigUInt_t* a = bigUInt_init();
+  a = bigUInt_resize(a, 2);
+  bigUInt_t* b = bigUInt_init();
+  bigUInt_t* c = bigUInt_init();
+  
+// 0000000000000002 ffffffffffffffff 
+  a->nums[0] = 0xffffffffffffffff;
+  a->nums[1] = 0x0000000000000002;
 
+// 0000000000000000 0000000000000004
+  b->nums[0] = 0x0000000000000004;
 
-  printf("%llu\n", a);
-  printf("%llu\n", b);
+// 0000000000000003 0000000000000003
 
+  bigUInt_add(&a, &b, &c); // c = a + b
 
-  printf("%llu\n", c);
-
+  printf("%llu\n", c->nums[0]);
+  printf("%llu\n", c->nums[1]);
+  
+  bigUInt_destroy(a);
   return 0;
 }
