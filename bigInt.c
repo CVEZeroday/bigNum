@@ -31,11 +31,12 @@ bigUInt_t* bigUInt_resize(bigUInt_t* a, uint64_t size)
   {
     return NULL;
   }
-  memset(_tmp->nums + _tmp->len, 0, (size - _tmp->len) * 8);
+  if (size > _tmp->len)
+  {
+    memset(_tmp->nums + _tmp->len, 0, (size - _tmp->len) * 8);
+  }
   _tmp->len = size;
   return _tmp;
-  //for (uint64_t i = _len; i <= size; i++)
-  //  a->nums[i] = 0;
 }
 
 /* Arithmetic Operators */
@@ -93,15 +94,15 @@ void bigUInt_dec(bigUInt_t** a)
 // NOT DONE YET.
 void bigUInt_bit_shl(bigUInt_t** a, uint64_t b)
 {
-  for (; b > 0; b--)
-    __bigUInt_shl((*a)->len, (*a)->nums);
+  for (; b > 0; b--);
+//    __bigUInt_shl((*a)->len, (*a)->nums);
 }
 // >>
 // NOT DONE YET.
 void bigUInt_bit_shr(bigUInt_t** a, uint64_t b)
 {
-  for (; b > 0; b--)
-    __bigUInt_shr((*a)->len, (*a)->nums);
+  for (; b > 0; b--);
+//    __bigUInt_shr((*a)->len, (*a)->nums);
 }
 
 // =
@@ -117,6 +118,10 @@ void bigUInt_assign(bigUInt_t** a, bigUInt_t** b)
 
 void bigUInt_assign_num(bigUInt_t** a, uint64_t b)
 {
+  if ((*a)->len > 1)
+  {
+    *a = bigUInt_resize(*a, 1);
+  }
   memset((*a)->nums, 0, (*a)->len * 8);
   (*a)->nums[0] = b;
 }
@@ -124,24 +129,24 @@ void bigUInt_assign_num(bigUInt_t** a, uint64_t b)
 int main()
 {
   bigUInt_t* a = bigUInt_init();
+  a = bigUInt_resize(a, 2);
   bigUInt_t* b = bigUInt_init();
   bigUInt_t* c = bigUInt_init();
+  
+// 0000000000000002 ffffffffffffffff 
+  a->nums[0] = 0xffffffffffffffff;
+  a->nums[1] = 0x0000000000000002;
 
-  a->nums[0] = ULLONG_MAX;
-  b->nums[0] = 2;
- 
-  a = bigUInt_resize(a, 2);
-  b = bigUInt_resize(b, 2);
+// 0000000000000000 0000000000000004
+  b->nums[0] = 0x0000000000000004;
 
-  a->nums[1] = 1;
-  b->nums[1] = 2;
+// 0000000000000003 0000000000000003
 
   bigUInt_add(&a, &b, &c); // c = a + b
+
   printf("%llu\n", c->nums[0]);
   printf("%llu\n", c->nums[1]);
   
   bigUInt_destroy(a);
-  bigUInt_destroy(b);
-  bigUInt_destroy(c);
   return 0;
 }
