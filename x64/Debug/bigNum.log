@@ -1,4 +1,4 @@
 ﻿  bigInt.c
 D:\bigNum\bigInt.h(1,9): warning C4068: unknown pragma 'GCC'
-D:\bigNum\bigInt.c(223,27): warning C4334: '<<': result of 32-bit shift implicitly converted to 64 bits (was 64-bit shift intended?)
+D:\bigNum\bigInt.c(324,30): warning C4334: '<<': result of 32-bit shift implicitly converted to 64 bits (was 64-bit shift intended?)
   bigNum.vcxproj -> D:\bigNum\x64\Debug\bigNum.exe
