@@ -203,7 +203,7 @@ void bigUInt_assign_num(bigUInt_t** a, uint64_t b)
 
 int main()
 {
-  unsigned long long a, b, c, res, carry, n;
+  unsigned long long a, b, c, res, carry = 0, n;
   a = 13; b = 11, n=4;
   res = b;
   a <<= n;
@@ -212,13 +212,18 @@ int main()
     if ((res & 0x1) == 1)
     {
       c >>= 1;
+      if (carry == 1)
+      {
+        carry <<= ((n << 1) - 1);
+        c ^= carry;
+      }
       a = c >> n;
       b = c ^ (a << n);
     }
-    else if ((res & 0x1) == 0)
-    {
-      a >>= 1;
-    }
+    if ((a + b) & (1 << n)) carry = 1;
+    else carry = 0;
+    a >>= 1;
+    c = (a << n) ^ b;
   }
 
 

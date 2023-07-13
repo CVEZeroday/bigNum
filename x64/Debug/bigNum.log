@@ -1,5 +1,4 @@
 ﻿  bigInt.c
-C:\Users\sjyki\Documents\bigNum\bigInt.h(1,9): warning C4068: 알 수 없는 pragma 'GCC'
-C:\Users\sjyki\Documents\bigNum\bigInt.c(148,21): warning C4554: '&': 연산자 우선 순위에 오류가 있는지 확인하세요. 괄호를 사용하여 우선 순위를 명확하게 지정하세요.
-C:\Users\sjyki\Documents\bigNum\bigInt.c(146,33): warning C4101: 'carry' :참조되지 않은 지역 변수입니다.
-  bigNum.vcxproj -> C:\Users\sjyki\Documents\bigNum\x64\Debug\bigNum.exe
+D:\bigNum\bigInt.h(1,9): warning C4068: unknown pragma 'GCC'
+D:\bigNum\bigInt.c(223,27): warning C4334: '<<': result of 32-bit shift implicitly converted to 64 bits (was 64-bit shift intended?)
+  bigNum.vcxproj -> D:\bigNum\x64\Debug\bigNum.exe
