@@ -4,6 +4,8 @@
 #include <limits.h>
 #include "bigInt.h"
 
+// junyeong babo
+
 bigUInt_t* bigUInt_init()
 {
   bigUInt_t* _tmp = malloc(sizeof(bigUInt_t) + 9);
