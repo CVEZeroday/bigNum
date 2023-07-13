@@ -1,1 +1,2 @@
 D:\bigNum\x64\Debug\bigNum.exe
+C:\Users\sjyki\Documents\bigNum\x64\Debug\bigNum.exe
