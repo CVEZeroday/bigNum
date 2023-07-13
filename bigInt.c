@@ -16,8 +16,6 @@ bigUInt_t* bigUInt_init()
   return _tmp;
 }
 
-//bigUInt_t* bigUInt_binary(bigUInt)
-
 void bigUInt_destroy(bigUInt_t* num)
 {
   free(num);
@@ -90,6 +88,68 @@ void bigUInt_dec(bigUInt_t** a)
   __bigUInt_dec((*a)->len, (*a)->nums);
 }
 
+/* Logical Operators */
+
+// return 0 if zero, 1 if not zero
+bool bigUInt_n_zero(bigUInt_t** a)
+{
+  for (uint64_t i = 0; i < (*a)->len; i++)
+  {
+    if ((*a)->nums[i] & ULLONG_MAX)
+      return 1;
+  }
+  return 0;
+}
+// &&
+bool bigUInt_and(bigUInt_t** a, bigUInt_t** b)
+{
+  return bigUInt_n_zero(a) && bigUInt_n_zero(b);
+}
+// ||
+bool bigUInt_or(bigUInt_t** a, bigUInt_t** b)
+{
+  return bigUInt_n_zero(a) || bigUInt_n_zero(b);
+}
+// !
+bool bigUInt_not(bigUInt_t** a)
+{
+  return !bigUInt_n_zero(a);
+}
+
+/* Bitwise Operators */
+
+// &
+void bigUInt_bit_and(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
+{
+  for (uint64_t i = 0; i < (*a)->len; i++)
+  {
+    (*dest)->nums[i] = (*a)->nums[i] & (*b)->nums[i];
+  }
+}
+// |
+void bigUInt_bit_or(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
+{
+  for (uint64_t i = 0; i < (*a)->len; i++)
+  {
+    (*dest)->nums[i] = (*a)->nums[i] | (*b)->nums[i];
+  }
+}
+// ^
+void bigUInt_bit_xor(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
+{
+  for (uint64_t i = 0; i < (*a)->len; i++)
+  {
+    (*dest)->nums[i] = (*a)->nums[i] ^ (*b)->nums[i];
+  }
+}
+// ~
+void bigUInt_bit_not(bigUInt_t** a, bigUInt_t** dest)
+{
+  for (uint64_t i = 0; i < (*a)->len; i++)
+  {
+    (*dest)->nums[i] = ~((*a)->nums[i]);
+  } 
+}
 // <<
 // NOT DONE YET.
 void bigUInt_bit_shl(bigUInt_t** a, uint64_t b)

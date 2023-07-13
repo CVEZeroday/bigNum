@@ -95,6 +95,7 @@ bool bigUInt_less_eq(bigUInt_t** a, bigUInt_t** b);
 
 /* Logical Operators */
 
+bool bigUInt_iszero(bigUInt_t** a);
 // &&
 bool bigUInt_and(bigUInt_t** a, bigUInt_t** b);
 // ||
@@ -105,13 +106,13 @@ bool bigUInt_not(bigUInt_t** a);
 /* Bitwise Operators */
 
 // &
-int bigUInt_bit_and(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest);
+void bigUInt_bit_and(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest);
 // |
-int bigUInt_bit_or(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest);
+void bigUInt_bit_or(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest);
 // ^
-int bigUInt_bit_xor(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest);
+void bigUInt_bit_xor(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest);
 // ~
-int bigUInt_bit_not(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest);
+void bigUInt_bit_not(bigUInt_t** a, bigUInt_t** dest);
 // <<
 void bigUInt_bit_shl(bigUInt_t** a, uint64_t b);
 // >>
