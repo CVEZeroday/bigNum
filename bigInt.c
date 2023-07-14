@@ -121,56 +121,99 @@ void bigUInt_sub(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
   __bigUInt_sub(_max_len, (*a)->nums, (*b)->nums, (*dest)->nums);
 }
 // *
-// NOT DONE YET.
 void bigUInt_mul(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
 {
   uint64_t _n = 0;
   // 알고리즘상 a와 b를 비트시프트 해야하는데 그러면 a와 b의 값이 바뀌어 버리므로 _a와 _b에 복사해서 계산
   bigUInt_t* _a = bigUInt_init();
   bigUInt_t* _b = bigUInt_init();
+  bigUInt_t* _dest = bigUInt_init();
   bigUInt_assign(&_a, a);
   bigUInt_assign(&_b, b);
+  bigUInt_assign(&_dest, dest);
   
   // dest 초기화
-  *dest = bigUInt_resize(*dest, 1);
-  (*dest)->nums[0] = 0;
+  _dest = bigUInt_resize(_dest, 1);
+  _dest->nums[0] = 0;
 
   // 곱셈 알고리즘
   while (bigUInt_n_zero(&_b))
   {
     if (_b->nums[0] & 1)
     {
-      bigUInt_bit_shl(&_a, _n, &_a);
-      bigUInt_add(dest, &_a, dest);
+      bigUInt_bit_shl(a, _n, &_a);
+      bigUInt_add(&_dest, &_a, &_dest);
     }
     bigUInt_bit_shr(&_b, 1, &_b);
     _n++;
   }
+  bigUInt_assign(dest, &_dest);
 
   // _a와 _b 메모리 반환
   bigUInt_destroy(_a);
   bigUInt_destroy(_b);
+  bigUInt_destroy(_dest);
 }
 // /
-// NOT DONE YET.
-// 아직 구현 안됨
+bool bigUInt_div_cmp_helper(bigUInt_t** a, bigUInt_t** b, uint64_t len)
+{
+  for (uint64_t i = len; i > 0; i--)
+  {
+    register uint64_t __a = 0;
+    register uint64_t __b = 0;
+    if (i + len - 1 < (*a)->len) __a = (*a)->nums[i + len - 1];
+    if (i - 1 < (*b)->len) __b = (*b)->nums[i - 1];
+    if (__a == __b) continue;
+    if (__a < __b) return 1;
+    if (__a > __b) return 0;
+  }
+  return 0;
+}
 void bigUInt_div(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
 {
-  *a = bigUInt_resize(*a, (*a)->len * 2);
-  //while (bigUInt_greater_eq(R, b))
-  {
+  uint64_t _max_len = MAX((*a)->len, (*b)->len);
 
+  bigUInt_t* _a = bigUInt_init();
+  bigUInt_assign(&_a, a);
+  
+  _a = bigUInt_resize(_a, _max_len * 2);
+  for (uint64_t i = 0; i < _max_len * 64; i++)
+  {
+    bigUInt_bit_shl(&_a, 1, &_a);
+    if (bigUInt_div_cmp_helper(&_a, b, _max_len))
+      continue;
+    _a->nums[0] |= 1;
+    __bigUInt_sub(_max_len, _a->nums+_max_len, (*b)->nums, _a->nums + _max_len);
   }
 
+  _a = bigUInt_resize(_a, _max_len);
+  bigUInt_assign(dest, &_a);
+
+  bigUInt_destroy(_a);
 }
 // %
-// NOT DONE YET.
-// 아직 구현 안됨
 void bigUInt_mod(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
 {
-  bigUInt_t* _div = bigUInt_init();
+  uint64_t _max_len = MAX((*a)->len, (*b)->len);
 
-  bigUInt_destroy(_div);
+  bigUInt_t* _a = bigUInt_init();
+  bigUInt_assign(&_a, a);
+
+  _a = bigUInt_resize(_a, _max_len * 2);
+  for (uint64_t i = 0; i < _max_len * 64; i++)
+  {
+    bigUInt_bit_shl(&_a, 1, &_a);
+    if (bigUInt_div_cmp_helper(&_a, b, _max_len))
+      continue;
+    _a->nums[0] |= 1;
+    __bigUInt_sub(_max_len, _a->nums + _max_len, (*b)->nums, _a->nums + _max_len);
+  }
+
+  memcpy(_a->nums, _a->nums + _max_len, _max_len * 8);
+  _a = bigUInt_resize(_a, _max_len);
+  bigUInt_assign(dest, &_a);
+
+  bigUInt_destroy(_a);
 }
 
 // ++
@@ -235,19 +278,17 @@ bool bigUInt_neq(bigUInt_t** a, bigUInt_t** b)
   return !bigUInt_eq(a, b);
 }
 // >
-// 이거 주석문 짜다가 문제있다는거 깨달음
-// NOT DONE YET
 bool bigUInt_greater(bigUInt_t** a, bigUInt_t** b)
 {
   uint64_t _max_len = MAX((*a)->len, (*b)->len);
   // 둘 중 더 긴 bigUInt의 len값만큼 반복
-  for (uint64_t i = 0; i < _max_len; i++)
+  for (uint64_t i = _max_len; i > 0; i--)
   {
     // 배열 길이보다 큰 i값이 들어가지 않도록 i가 len보다 작은 경우에만 __a와 __b에 값을 할당 (i가 len보다 크거나 같아지면 기본값 0인 상태로 비교)
     register uint64_t __a = 0;
     register uint64_t __b = 0;
-    if (i < (*a)->len) __a = (*a)->nums[i];
-    if (i < (*b)->len) __b = (*b)->nums[i];
+    if (i-1 < (*a)->len) __a = (*a)->nums[i-1];
+    if (i-1 < (*b)->len) __b = (*b)->nums[i-1];
     if (__a == __b) continue;
     if (__a > __b) return 1;
     if (__a < __b) return 0;
@@ -255,16 +296,15 @@ bool bigUInt_greater(bigUInt_t** a, bigUInt_t** b)
   return 0;
 }
 // <
-// NOT DONE YET
 bool bigUInt_less(bigUInt_t** a, bigUInt_t** b)
 {
   uint64_t _max_len = MAX((*a)->len, (*b)->len);
-  for (uint64_t i = 0; i < _max_len; i++)
+  for (uint64_t i = _max_len; i > 0; i--)
   {
     register uint64_t __a = 0;
     register uint64_t __b = 0;
-    if (i < (*a)->len) __a = (*a)->nums[i];
-    if (i < (*b)->len) __b = (*b)->nums[i];
+    if (i-1 < (*a)->len) __a = (*a)->nums[i-1];
+    if (i-1 < (*b)->len) __b = (*b)->nums[i-1];
     if (__a == __b) continue;
     if (__a < __b) return 1;
     if (__a > __b) return 0;
@@ -272,16 +312,15 @@ bool bigUInt_less(bigUInt_t** a, bigUInt_t** b)
   return 0;
 }
 // >=
-// NOT DONE YET
 bool bigUInt_greater_eq(bigUInt_t** a, bigUInt_t** b)
 {
   uint64_t _max_len = MAX((*a)->len, (*b)->len);
-  for (uint64_t i = 0; i < _max_len; i++)
+  for (uint64_t i = _max_len; i > 0; i--)
   {
     register uint64_t __a = 0;
     register uint64_t __b = 0;
-    if (i < (*a)->len) __a = (*a)->nums[i];
-    if (i < (*b)->len) __b = (*b)->nums[i];
+    if (i-1 < (*a)->len) __a = (*a)->nums[i-1];
+    if (i-1 < (*b)->len) __b = (*b)->nums[i-1];
     if (__a == __b) continue;
     if (__a > __b) return 1;
     if (__a < __b) return 0;
@@ -289,16 +328,15 @@ bool bigUInt_greater_eq(bigUInt_t** a, bigUInt_t** b)
   return 1;
 }
 // <=
-// NOT DONE YET
 bool bigUInt_less_eq(bigUInt_t** a, bigUInt_t** b)
 {
   uint64_t _max_len = MAX((*a)->len, (*b)->len);
-  for (uint64_t i = 0; i < _max_len; i++)
+  for (uint64_t i = _max_len; i > 0; i--)
   {
     register uint64_t __a = 0;
     register uint64_t __b = 0;
-    if (i < (*a)->len) __a = (*a)->nums[i];
-    if (i < (*b)->len) __b = (*b)->nums[i];
+    if (i-1 < (*a)->len) __a = (*a)->nums[i-1];
+    if (i-1 < (*b)->len) __b = (*b)->nums[i-1];
     if (__a == __b) continue;
     if (__a < __b) return 1;
     if (__a > __b) return 0;
@@ -382,23 +420,35 @@ void bigUInt_bit_shl(bigUInt_t** a, uint64_t b, bigUInt_t** dest)
 {
   // a가 0이면 무한반복이 일어나서 이를 방지
   if (!bigUInt_n_zero(a)) return;
+
+  bigUInt_t* _a = bigUInt_init();
+  bigUInt_assign(&_a, a);
+
   // b번 반복
   for (uint64_t i = 0; i < b; i++)
   {
     // 어셈블리어 shl 함수 호출 (dest = a << 1);
-    __bigUInt_bit_shl((*a)->len, (*a)->nums, (*dest)->nums);
+    __bigUInt_bit_shl(_a->len, _a->nums);
   }
+  bigUInt_assign(dest, &_a);
+  bigUInt_destroy(_a);
 }
 // >>
 void bigUInt_bit_shr(bigUInt_t** a, uint64_t b, bigUInt_t** dest)
 {
   // a가 0이면 무한반복이 일어나서 이를 방지
   if (!bigUInt_n_zero(a)) return;
+
+  bigUInt_t* _a = bigUInt_init();
+  bigUInt_assign(&_a, a);
+
   for (uint64_t i = 0; i < b; i++)
   {
     // 어셈블리어 shr 함수 호출 (dest = a >> 1);
-    __bigUInt_bit_shr((*a)->len, (*a)->nums, (*dest)->nums);
+    __bigUInt_bit_shr(_a->len, _a->nums);
   }
+  bigUInt_assign(dest, &_a);
+  bigUInt_destroy(_a);
 }
 
 // =
@@ -412,15 +462,47 @@ void bigUInt_assign(bigUInt_t** a, bigUInt_t** b)
   // a에다가 b값 복사함
   memcpy((*a)->nums, (*b)->nums, (*b)->len * 8);
 }
-void bigUInt_assign_num(bigUInt_t** a, uint64_t b)
+
+/* utilities */
+
+// int64_t to bigUInt
+int itobi(int64_t num, bigUInt_t** dest)
 {
-  if ((*a)->len > 1)
+  if ((*dest)->len > 1)
   {
     // a 크기 1로 설정
-    *a = bigUInt_resize(*a, 1);
+    *dest = bigUInt_resize(*dest, 1);
   }
   // a에다가 b 대입
-  (*a)->nums[0] = b;
+  (*dest)->nums[0] = num;
+}
+// bigUInt to string
+char* bitostr(bigUInt_t* num)
+{
+  //
+}
+// bigUInt to int64_t
+int64_t bitoi(bigUInt_t* num)
+{
+  if (num->len != 1) return 0xffffffffffffffff;
+  return num->nums[0];
+}
+
+// bigUInt 출력 함수
+void putbi(bigUInt_t** bi)
+{
+  //
+}
+
+// bigUInt 출력 가능한 printf 재정의
+int bi_printf(const char* format, ...)
+{
+  //
+}
+// bigUInt 수식을 입력받아 계산해주는 함수
+int bi_formulaf(bigUInt_t** dest, const char* format, ...)
+{
+  //
 }
 
 int main()
@@ -429,9 +511,9 @@ int main()
   bigUInt_t* a = bigUInt_init();
   bigUInt_t* b = bigUInt_init();
 
-  a->nums[0] = 5;
-  b->nums[0] = 35;
-  bigUInt_mul(&a, &b, &a);
+  a->nums[0] = 51231;
+  b->nums[0] = 10;
+  bigUInt_mod(&a, &b, &a);
   printf("%llu\n", a->nums[0]);
 
   return 0;

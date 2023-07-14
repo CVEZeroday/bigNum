@@ -46,6 +46,10 @@
 
 /* bigUInt_s structure definition */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // bigUInt 구조체 정의
 // len 은 nums 배열의 길이이고, nums는 메모리가 얼마만큼 할당되냐에 따라 가변적으로 길이가 변함
 // nums[0] 부터 nums[1], nums[2], ... 로 진행될수록 높은 자릿수임
@@ -78,6 +82,7 @@ void bigUInt_sub(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest);
 void bigUInt_mul(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest);
 // /
 // dest = a / b
+bool bigUInt_div_cmp_helper(bigUInt_t** a, bigUInt_t** b, uint64_t len);
 void bigUInt_div(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest);
 // %
 // dest = a % b
@@ -152,10 +157,9 @@ void bigUInt_bit_shr(bigUInt_t** a, uint64_t b, bigUInt_t** dest);
 void bigUInt_assign(bigUInt_t** a, bigUInt_t** b);
 // a = b
 // b는 64비트 정수임 (bigUInt 아님)
-void bigUInt_assign_num(bigUInt_t** a, uint64_t b);
 
+/* utilities */
 
-// 여기 아래는 아직 구현 안함
 // int64_t to bigUInt
 int itobi(int64_t num, bigUInt_t** dest);
 // bigUInt to string
@@ -164,6 +168,10 @@ char* bitostr(bigUInt_t* num);
 int64_t bitoi(bigUInt_t* num);
 
 // bigUInt 출력 가능한 printf 재정의
-int bi_printf(const char* format, ...);\
+int bi_printf(const char* format, ...);
 // bigUInt 수식을 입력받아 계산해주는 함수
 int bi_formulaf(bigUInt_t** dest, const char* format, ...);
+
+#ifdef __cplusplus
+}
+#endif

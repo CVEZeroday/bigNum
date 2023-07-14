@@ -125,7 +125,7 @@
       je _end_shl
       mov r10, [rdx+rbx*8]
       shl r10, 1
-      mov [r8+rbx*8], r10
+      mov [rdx+rbx*8], r10
       inc rbx
       jc _loop_shl_cf
       jmp _loop_shl_ncf
@@ -136,7 +136,7 @@
       mov r10, [rdx+rbx*8]
       shl r10, 1
       or r10, 1
-      mov [r8+rbx*8], r10
+      mov [rdx+rbx*8], r10
       inc rbx
       jc _loop_shl_cf
       jmp _loop_shl_ncf
@@ -155,13 +155,12 @@
       je _end_shr
       mov r10, [rdx+rbx*8]
       shr r10, 1
-      mov [r8+rbx*8], r10
+      mov [rdx+rbx*8], r10
       inc rbx
       jc _loop_shr_cf
       jmp _loop_shr_ncf
 
     _loop_shr_cf:
-      cmp rbx, rcx
       cmp rbx, rcx
       je _end_shr
       mov rax, [rdx+rbx*8]
@@ -169,7 +168,7 @@
       mov rax, 1
       shl rax, 63
       or r10, rax
-      mov [r8+rbx*8], r10
+      mov [rdx+rbx*8], r10
       inc rbx
       jc _loop_shr_cf
       jmp _loop_shr_ncf
