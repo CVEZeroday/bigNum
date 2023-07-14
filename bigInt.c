@@ -297,6 +297,7 @@ void bigUInt_assign_num(bigUInt_t** a, uint64_t b)
 
 int main()
 {
+  /*
   unsigned long long a, b, c, res, carry = 0, n;
   a = 13; b = 11, n=4;
   res = b;
@@ -327,7 +328,8 @@ int main()
 
 
   printf("%llu\n", c);
-/*
+  */
+
   bigUInt_t* a = bigUInt_init();
   bigUInt_t* b = bigUInt_init();
   a = bigUInt_resize(a, 3);
@@ -336,7 +338,9 @@ int main()
   a->nums[1] = 0b1001;
   b->nums[0] = 0b0101;
   b->nums[1] = 0b1001;
-  printf("%d\n", bigUInt_and(&a, &b));
-*/
+  bigUInt_sub(&a, &b, &a);
+  printf("%llu\n", a->nums[0]);
+  printf("%llu\n", a->nums[1]);
+
   return 0;
 }

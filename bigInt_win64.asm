@@ -32,6 +32,36 @@
   __bigUInt_add endp
 
   __bigUInt_sub proc
+    mov r11, r9
+    clc
+    
+    xor rbx, rbx
+    _loop_ncf_sub:
+      cmp rbx, rcx
+      je _end_sub
+      mov r10, [rdx+rbx*8]
+      sub r10, [r8+rbx*8]
+      mov [r9+rbx*8], r10
+      inc rbx
+      jc _loop_cf_sub
+      jmp _loop_ncf_sub
+
+    _loop_cf_sub:
+      cmp rbx, rcx
+      je _end_sub
+      mov r10, [rdx+rbx*8]
+      dec r10
+      sub r10, [r8+rbx*8]
+      mov [r9+rbx*8], r10
+      inc rbx
+      jc _loop_cf_sub
+      jmp _loop_ncf_sub
+
+    _end_sub:
+      mov r9, r11
+      xor rax, rax
+      ret
+
 
   __bigUInt_sub endp
 
