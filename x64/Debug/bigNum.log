@@ -1,9 +1,9 @@
 ﻿  bigInt.c
 D:\bigNum\bigInt.h(1,9): warning C4068: 알 수 없는 pragma 'GCC'
-D:\bigNum\bigInt.c(94,31): warning C4020: 'bigUInt_bit_shl': 실제 매개 변수가 너무 많습니다.
-D:\bigNum\bigInt.c(97,29): warning C4020: 'bigUInt_bit_shr': 실제 매개 변수가 너무 많습니다.
-D:\bigNum\bigInt.c(301,1): warning C4029: 선언된 정식 매개 변수 목록이 정의와 다릅니다.
-D:\bigNum\bigInt.c(305,22): warning C4013: '__bigUInt_bit_shl'이(가) 정의되지 않았습니다. extern은 int형을 반환하는 것으로 간주합니다.
-D:\bigNum\bigInt.c(310,1): warning C4029: 선언된 정식 매개 변수 목록이 정의와 다릅니다.
-D:\bigNum\bigInt.c(314,22): warning C4013: '__bigUInt_bit_shr'이(가) 정의되지 않았습니다. extern은 int형을 반환하는 것으로 간주합니다.
+D:\bigNum\bigInt.c(96,16): warning C4013: '__bigUInt_add'이(가) 정의되지 않았습니다. extern은 int형을 반환하는 것으로 간주합니다.
+D:\bigNum\bigInt.c(121,16): warning C4013: '__bigUInt_sub'이(가) 정의되지 않았습니다. extern은 int형을 반환하는 것으로 간주합니다.
+D:\bigNum\bigInt.c(184,16): warning C4013: '__bigUInt_inc'이(가) 정의되지 않았습니다. extern은 int형을 반환하는 것으로 간주합니다.
+D:\bigNum\bigInt.c(191,16): warning C4013: '__bigUInt_dec'이(가) 정의되지 않았습니다. extern은 int형을 반환하는 것으로 간주합니다.
+D:\bigNum\bigInt.c(389,22): warning C4013: '__bigUInt_bit_shl'이(가) 정의되지 않았습니다. extern은 int형을 반환하는 것으로 간주합니다.
+D:\bigNum\bigInt.c(400,22): warning C4013: '__bigUInt_bit_shr'이(가) 정의되지 않았습니다. extern은 int형을 반환하는 것으로 간주합니다.
   bigNum.vcxproj -> D:\bigNum\x64\Debug\bigNum.exe

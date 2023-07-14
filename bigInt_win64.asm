@@ -1,8 +1,10 @@
 .code
+  ; bigUInt_add 함수
   __bigUInt_add proc
     mov r11, r9
     clc
     
+    ; nums[0]부터 nums[끝] 까지 반복 (carry가 발생하면 _loop_cf_add로 점프, carry가 발생 안하면 _loop_ncf_add로 점프)
     xor rbx, rbx
     _loop_ncf_add:
       cmp rbx, rcx
@@ -24,6 +26,7 @@
       jc _loop_cf_add
       jmp _loop_ncf_add
 
+    ; 계산 후에 dest가 가리키던 포인터 위치 복구
     _end_add:
       mov r9, r11
       xor rax, rax
@@ -31,10 +34,12 @@
 
   __bigUInt_add endp
 
+  ; bigUInt_add 함수
   __bigUInt_sub proc
     mov r11, r9
     clc
     
+    ; nums[0]부터 nums[끝] 까지 반복 (carry가 발생하면 _loop_cf_add로 점프, carry가 발생 안하면 _loop_ncf_add로 점프)
     xor rbx, rbx
     _loop_ncf_sub:
       cmp rbx, rcx
@@ -57,15 +62,17 @@
       jc _loop_cf_sub
       jmp _loop_ncf_sub
 
+    ; 계산 후에 dest가 가리키던 포인터 위치 복구
     _end_sub:
       mov r9, r11
       xor rax, rax
       ret
 
-
   __bigUInt_sub endp
 
+  ; bigUInt_inc 함수
   __bigUInt_inc proc
+    ; nums[0]부터 nums[끝] 까지 inc 명령어 반복
     xor rbx, rbx
     _loop_inc:
       cmp rbx, rcx
@@ -76,16 +83,19 @@
       inc rbx
       jc _loop_inc
       jmp _end_inc
-
+    
+    ; 리턴값 0으로 바꾸고 리턴
     _end_inc:
       xor rax, rax
       ret
 
   __bigUInt_inc endp
 
+  ; bigUInt_dec 함수
   __bigUInt_dec proc
     xor rbx, rbx
 
+    ; nums[0]부터 nums[끝] 까지 inc 명령어 반복
     _loop_dec:
       cmp rbx, rcx
       je _end_dec
@@ -99,12 +109,14 @@
       je _loop_dec
       jmp _end_dec
 
+    ; 리턴값 0으로 바꾸고 리턴
     _end_dec:
       xor rax, rax
       ret
 
   __bigUInt_dec endp
 
+  ; 비트 시프트는 아직 오류있는거 같아서 주석 안닮
   __bigUInt_bit_shl proc
     xor rbx, rbx
 
