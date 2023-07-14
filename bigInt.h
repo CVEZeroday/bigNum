@@ -55,7 +55,7 @@ typedef struct bigUInt_s {
   uint64_t nums[];
 } bigUInt_t;
 
-#define bigInt bigUInt_t**
+#define bigUInt bigUInt_t*
 
 bigUInt_t* bigUInt_init();
 void bigUInt_destroy(bigUInt_t* num);
@@ -95,7 +95,7 @@ bool bigUInt_less_eq(bigUInt_t** a, bigUInt_t** b);
 
 /* Logical Operators */
 
-bool bigUInt_iszero(bigUInt_t** a);
+bool bigUInt_n_zero(bigUInt_t** a);
 // &&
 bool bigUInt_and(bigUInt_t** a, bigUInt_t** b);
 // ||

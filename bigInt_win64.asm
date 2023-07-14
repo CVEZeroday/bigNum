@@ -84,21 +84,88 @@
   __bigUInt_inc endp
 
   __bigUInt_dec proc
-    xor rcx, rcx
+    xor rbx, rbx
+
     _loop_dec:
       cmp rbx, rcx
       je _end_dec
-      mov r10, [rdx+rcx*8]
+      mov r10, [rdx+rbx*8]
       dec r10
-      mov [rdx+rcx*8], r10
-      inc rcx
-      jmp _loop_dec
-      jc _end_dec
+      mov [rdx+rbx*8], r10
+      inc rbx
+      xor rax, rax
+      not rax
+      cmp r10, rax
+      je _loop_dec
+      jmp _end_dec
 
     _end_dec:
       xor rax, rax
       ret
 
   __bigUInt_dec endp
+
+  __bigUInt_bit_shl proc
+    xor rbx, rbx
+
+    _loop_shl_ncf:
+      cmp rbx, rcx
+      je _end_shl
+      mov r10, [rdx+rbx*8]
+      shl r10, 1
+      mov [r8+rbx*8], r10
+      inc rbx
+      jc _loop_shl_cf
+      jmp _loop_shl_ncf
+
+    _loop_shl_cf:
+      cmp rbx, rcx
+      je _end_shl
+      mov r10, [rdx+rbx*8]
+      shl r10, 1
+      or r10, 1
+      mov [r8+rbx*8], r10
+      inc rbx
+      jc _loop_shl_cf
+      jmp _loop_shl_ncf
+
+    _end_shl:
+      xor rax, rax
+      ret
+    
+  __bigUInt_bit_shl endp
+
+  __bigUInt_bit_shr proc
+    xor rbx, rbx
+
+    _loop_shr_ncf:
+      cmp rbx, rcx
+      je _end_shr
+      mov r10, [rdx+rbx*8]
+      shr r10, 1
+      mov [r8+rbx*8], r10
+      inc rbx
+      jc _loop_shr_cf
+      jmp _loop_shr_ncf
+
+    _loop_shr_cf:
+      cmp rbx, rcx
+      cmp rbx, rcx
+      je _end_shr
+      mov rax, [rdx+rbx*8]
+      shr r10, 1
+      mov rax, 1
+      shl rax, 63
+      or r10, rax
+      mov [r8+rbx*8], r10
+      inc rbx
+      jc _loop_shr_cf
+      jmp _loop_shr_ncf
+
+    _end_shr:
+      xor rax, rax
+      ret
+    
+  __bigUInt_bit_shr endp
 end
 

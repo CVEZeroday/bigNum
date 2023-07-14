@@ -59,9 +59,14 @@ void bigUInt_add(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
 }
 
 // -
-// NOT DONE YET.
 void bigUInt_sub(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
 {
+  if (bigUInt_less(a, b))
+  {
+    for (int i = 0; i < (*dest)->len; i++)
+      (*dest)->nums[i] ^= (*dest)->nums[i];
+    return;
+  }
   register uint64_t _max_len = MAX_TRIPLE((*a)->len, (*b)->len, (*dest)->len);
   if (_max_len > (*b)->len)
     *b = bigUInt_resize(*b, _max_len);
@@ -75,29 +80,45 @@ void bigUInt_sub(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
 // NOT DONE YET.
 void bigUInt_mul(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
 {
-    // (*a)->nums[0] & 0x1
-    // if((*b)->nums[0] & 0x1 == 1)
-    // dest = a + b;
-    // a << 1;
-    // else if((*b)->nums[0] & 0x1 == 0)
-    // a << 1;
+  uint64_t n = 0;
+  bigUInt_t* _a = bigUInt_init();
+  bigUInt_t* _b = bigUInt_init();
+  bigUInt_assign(&_a, a);
+  bigUInt_assign(&_b, b);
+  *dest = bigUInt_resize(*dest, 1);
+  (*dest)->nums[0] = 0;
+  while (bigUInt_n_zero(&_b))
+  {
+    if (_b->nums[0] & 1)
+    {
+      bigUInt_bit_shl(&_a, n, &_a);
+      bigUInt_add(dest, &_a, dest);
+    }
+    bigUInt_bit_shr(&_b, 1, &_b);
+    n++;
+  }
 
-
-    bigUInt_add(a, b, dest); 
-    bigUInt_bit_shl(a, 1);
-   
+  bigUInt_destroy(_a);
+  bigUInt_destroy(_b);
 }
 // /
 // NOT DONE YET.
 void bigUInt_div(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
 {
+  *a = bigUInt_resize(*a, (*a)->len * 2);
+  //while (bigUInt_greater_eq(R, b))
+  {
+
+  }
 
 }
 // %
 // NOT DONE YET.
 void bigUInt_mod(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
 {
+  bigUInt_t* div = bigUInt_init();
 
+  bigUInt_destroy(div);
 }
 
 // ++
@@ -131,6 +152,18 @@ bool bigUInt_eq(bigUInt_t** a, bigUInt_t** b)
   }
   return 1;
 }
+bool bigUInt_eq_num(bigUInt_t** a, uint64_t b)
+{
+  if ((*a)->nums[0] != b)
+    return 0;
+  for (uint64_t i = 0; i < (*a)->len; i++)
+  {
+    if ((*a)->nums[0] & 0xffffffffffffffff)
+      return 0;
+  }
+  return 1;
+}
+
 // !=
 bool bigUInt_neq(bigUInt_t** a, bigUInt_t** b)
 {
@@ -264,14 +297,22 @@ void bigUInt_bit_not(bigUInt_t** a, bigUInt_t** dest)
   } 
 }
 // <<
-// NOT DONE YET.
-void bigUInt_bit_shl(bigUInt_t** a, uint64_t b)
+void bigUInt_bit_shl(bigUInt_t** a, uint64_t b, bigUInt_t** dest)
 {
+  if (!bigUInt_n_zero(a)) return;
+  for (uint64_t i = 0; i < b; i++)
+  {
+    __bigUInt_bit_shl((*a)->len, (*a)->nums, (*dest)->nums);
+  }
 }
 // >>
-// NOT DONE YET.
-void bigUInt_bit_shr(bigUInt_t** a, uint64_t b)
+void bigUInt_bit_shr(bigUInt_t** a, uint64_t b, bigUInt_t** dest)
 {
+  if (!bigUInt_n_zero(a)) return;
+  for (uint64_t i = 0; i < b; i++)
+  {
+    __bigUInt_bit_shr((*a)->len, (*a)->nums, (*dest)->nums);
+  }
 }
 
 // =
@@ -284,7 +325,6 @@ void bigUInt_assign(bigUInt_t** a, bigUInt_t** b)
   }
   memcpy((*a)->nums, (*b)->nums, (*b)->len * 8);
 }
-
 void bigUInt_assign_num(bigUInt_t** a, uint64_t b)
 {
   if ((*a)->len > 1)
@@ -297,58 +337,14 @@ void bigUInt_assign_num(bigUInt_t** a, uint64_t b)
 
 int main()
 {
-  unsigned long long a, b, c, prev, res, res1, carry = 0, n, temp;
-  a = 13; b = 11, n=4;
-  prev = a;
-  res = b;
-  temp = a;
-  res1 = res;
-  a <<= n;
-  c = a ^ b;
-  for(int i=1; i<=n-1; i++){
-    c >>= 1;
-    if (carry == 1)
-    {
-      carry <<= ((n << 1) - 1);
-      c ^= carry;
-    }
-    a = c >> n;
-    b = c ^ (a << n);
-    res1 >>= 1;
-    if ((res1 & 0x1) == 0)
-    {
-      temp = prev;
-      prev = 0;
-    }
-    else prev = temp;
-    if ((a + prev) & (1 << n)) carry = 1;
-    else carry = 0;
-
-    if ((res & 0x1) != 0) {
-      a >>= 1;
-      c = (a << n) ^ b;
-    }
-  }
-
-
-  printf("%llu\n", a);
-  printf("%llu\n", b);
-
-
-  printf("%llu\n", c);
-  */
 
   bigUInt_t* a = bigUInt_init();
   bigUInt_t* b = bigUInt_init();
-  a = bigUInt_resize(a, 3);
-  b = bigUInt_resize(b, 2);
-  a->nums[0] = 0b0101;
-  a->nums[1] = 0b1001;
-  b->nums[0] = 0b0101;
-  b->nums[1] = 0b1001;
-  bigUInt_sub(&a, &b, &a);
+
+  a->nums[0] = 5;
+  b->nums[0] = 35;
+  bigUInt_mul(&a, &b, &a);
   printf("%llu\n", a->nums[0]);
-  printf("%llu\n", a->nums[1]);
 
   return 0;
 }
