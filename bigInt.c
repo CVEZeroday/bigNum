@@ -297,29 +297,37 @@ void bigUInt_assign_num(bigUInt_t** a, uint64_t b)
 
 int main()
 {
-  /*
-  unsigned long long a, b, c, res, carry = 0, n;
+  unsigned long long a, b, c, prev, res, res1, carry = 0, n, temp;
   a = 13; b = 11, n=4;
+  prev = a;
   res = b;
+  temp = a;
+  res1 = res;
   a <<= n;
   c = a ^ b;
-  for(int i=0; i<=3; i++){
-    if ((res & 0x1) == 1)
+  for(int i=1; i<=n-1; i++){
+    c >>= 1;
+    if (carry == 1)
     {
-      c >>= 1;
-      if (carry == 1)
-      {
-        carry <<= ((n << 1) - 1);
-        c ^= carry;
-      }
-      a = c >> n;
-      b = c ^ (a << n);
+      carry <<= ((n << 1) - 1);
+      c ^= carry;
     }
-    if((res & 0x2) == 0) res = 0;
-    if ((a + res) & (1 << n)) carry = 1;
+    a = c >> n;
+    b = c ^ (a << n);
+    res1 >>= 1;
+    if ((res1 & 0x1) == 0)
+    {
+      temp = prev;
+      prev = 0;
+    }
+    else prev = temp;
+    if ((a + prev) & (1 << n)) carry = 1;
     else carry = 0;
-    a >>= 1;
-    c = (a << n) ^ b;
+
+    if ((res & 0x1) != 0) {
+      a >>= 1;
+      c = (a << n) ^ b;
+    }
   }
 
 
