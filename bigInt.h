@@ -5,6 +5,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#define BIN2DEC_COEFFICIENT 19.26591972
+// log10(2) * 64
 //#define uint64_t unsigned long long
 
 /**
@@ -169,8 +171,6 @@ int64_t bitoi(bigUInt_t* num);
 
 // bigUInt 출력 가능한 printf 재정의
 int bi_printf(const char* format, ...);
-// bigUInt 수식을 입력받아 계산해주는 함수
-int bi_formulaf(bigUInt_t** dest, const char* format, ...);
 
 #ifdef __cplusplus
 }

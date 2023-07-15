@@ -2,6 +2,7 @@
 #include <memory.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <math.h>
 #include "bigInt.h"
 
 // 언더바 (_) 한개인 변수들은 다 지역변수들임
@@ -79,10 +80,10 @@ void bigUInt_add(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
   register uint64_t _max_len = MAX_TRIPLE((*a)->len, (*b)->len, (*dest)->len);
   
   // 만약 맨 위쪽 비트가 1이면 덧셈을 했을때 nums 배열이 하나가 더 있어야 하므로 최대 길이 + 1로 길이를 늘려줌
-  if ((_max_len == (*a)->len) && ((*a)->nums[(*a)->len - 1] & 0xF000000000000000))
-    *a = bigUInt_resize(*a, _max_len+1);
-  if ((_max_len == (*b)->len) && ((*b)->nums[(*b)->len - 1] & 0xF000000000000000))
-    *b = bigUInt_resize(*b, _max_len+1);
+  if ((_max_len == (*a)->len) && ((*a)->nums[(*a)->len - 1] & 0x8000000000000000))
+    *a = bigUInt_resize(*a, ++_max_len);
+  if ((_max_len == (*b)->len) && ((*b)->nums[(*b)->len - 1] & 0x8000000000000000))
+    *b = bigUInt_resize(*b, ++_max_len);
 
   // 가장 길이가 긴 수에 다른 두 수의 길이를 맞춤
   if (_max_len > (*b)->len)
@@ -191,6 +192,24 @@ void bigUInt_div(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
 
   bigUInt_destroy(_a);
 }
+// Division function only for binary to decimal (fast)
+void bigUInt_div_by_10(bigUInt_t** a, char* mod)
+{
+  register uint64_t len = (*a)->len;
+  
+  *a = bigUInt_resize(*a, len + 1);
+  for (uint64_t i = 0; i < len * 64; i++)
+  {
+    bigUInt_bit_shl(a, 1, a);
+
+    if ((*a)->nums[len] < 10)
+      continue;
+    (*a)->nums[0] |= 1;
+    (*a)->nums[len] -= 10;
+  } 
+  *mod = (*a)->nums[len];
+  *a = bigUInt_resize(*a, len);
+}
 // %
 void bigUInt_mod(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
 {
@@ -220,7 +239,7 @@ void bigUInt_mod(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
 void bigUInt_inc(bigUInt_t** a)
 {
   // 덧셈처럼 만약 맨 첫번째 비트가 1이면 nums의 길이를 한칸 늘려줌
-  if ((*a)->nums[(*a)->len - 1] & 0xF000000000000000)
+  if ((*a)->nums[(*a)->len - 1] & 0x8000000000000000)
     *a = bigUInt_resize(*a, (*a)->len+1);
 
   // 어셈블리어 increase 함수 호출
@@ -427,6 +446,8 @@ void bigUInt_bit_shl(bigUInt_t** a, uint64_t b, bigUInt_t** dest)
   // b번 반복
   for (uint64_t i = 0; i < b; i++)
   {
+    if (_a->nums[_a->len - 1] & 0x8000000000000000)
+      _a = bigUInt_resize(_a, _a->len + 1);
     // 어셈블리어 shl 함수 호출 (dest = a << 1);
     __bigUInt_bit_shl(_a->len, _a->nums);
   }
@@ -476,10 +497,28 @@ int itobi(int64_t num, bigUInt_t** dest)
   // a에다가 b 대입
   (*dest)->nums[0] = num;
 }
-// bigUInt to string
+// bigUInt to string, must free() returned pointer after use
 char* bitostr(bigUInt_t* num)
 {
-  //
+  uint64_t _size = (uint64_t)ceil(BIN2DEC_COEFFICIENT * num->len);
+  uint64_t _cnt = _size;
+  char* _str = calloc(_size, sizeof(char));
+  char _mod;
+
+  bigUInt_t* _tmp = bigUInt_init();
+  bigUInt_assign(&_tmp, &num);
+
+  while (bigUInt_n_zero(&_tmp))
+  {
+    bigUInt_div_by_10(&_tmp, &_mod);
+    _str[--_cnt] = _mod + 0x30;
+  }
+  if (_str == 0 || _str + _cnt == 0) return NULL;
+  memcpy(_str, _str + _cnt, _size - _cnt);
+  _str = realloc(_str, _size - _cnt + 1);
+  _str[_size - _cnt] = '\0';
+
+  return _str;
 }
 // bigUInt to int64_t
 int64_t bitoi(bigUInt_t* num)
@@ -499,22 +538,31 @@ int bi_printf(const char* format, ...)
 {
   //
 }
-// bigUInt 수식을 입력받아 계산해주는 함수
-int bi_formulaf(bigUInt_t** dest, const char* format, ...)
-{
-  //
-}
 
 int main()
 {
-
+  
   bigUInt_t* a = bigUInt_init();
   bigUInt_t* b = bigUInt_init();
+  itobi(12345161616141345145, &a);
+  itobi(94565262456234526, &b);
+  bigUInt_mul(&a, &b, &a);
 
-  a->nums[0] = 51231;
-  b->nums[0] = 10;
-  bigUInt_mod(&a, &b, &a);
-  printf("%llu\n", a->nums[0]);
+  char* str = 0;
+  str = bitostr(a);
+  printf("%s\n", str);
 
+  free(str);
+  
+  /*
+  bigUInt_t* a = bigUInt_init();
+  char mod;
+  a = bigUInt_resize(a, 2);
+  a->nums[0] = 1231325615;
+  a->nums[1] = 1253252353525325;
+  bigUInt_div_by_10(&a, &mod);
+  bigUInt_div_by_10(&a, &mod);
+  bigUInt_div_by_10(&a, &mod);
+  */
   return 0;
 }
