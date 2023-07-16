@@ -196,7 +196,6 @@ void bigUInt_div(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
 void bigUInt_div_by_10(bigUInt_t** a, char* mod)
 {
   register uint64_t len = (*a)->len;
-  
   *a = bigUInt_resize(*a, len + 1);
   for (uint64_t i = 0; i < len * 64; i++)
   {
@@ -497,13 +496,14 @@ int itobi(int64_t num, bigUInt_t** dest)
   // a에다가 b 대입
   (*dest)->nums[0] = num;
 }
+
 // bigUInt to string, must free() returned pointer after use
 char* bitostr(bigUInt_t* num)
 {
   uint64_t _size = (uint64_t)ceil(BIN2DEC_COEFFICIENT * num->len);
   uint64_t _cnt = _size;
   char* _str = calloc(_size, sizeof(char));
-  char _mod;
+  char _mod = 0;
 
   bigUInt_t* _tmp = bigUInt_init();
   bigUInt_assign(&_tmp, &num);
@@ -520,6 +520,7 @@ char* bitostr(bigUInt_t* num)
 
   return _str;
 }
+
 // bigUInt to int64_t
 int64_t bitoi(bigUInt_t* num)
 {
@@ -527,33 +528,69 @@ int64_t bitoi(bigUInt_t* num)
   return num->nums[0];
 }
 
-// bigUInt 출력 함수
-void putbi(bigUInt_t** bi)
-{
-  //
-}
-
-// bigUInt 출력 가능한 printf 재정의
-int bi_printf(const char* format, ...)
-{
-  //
-}
-
 int main()
 {
-  
+  //DEBUG();
   bigUInt_t* a = bigUInt_init();
   bigUInt_t* b = bigUInt_init();
-  itobi(12345161616141345145, &a);
-  itobi(94565262456234526, &b);
-  bigUInt_mul(&a, &b, &a);
+  itobi(18446744073709551615, &a);
+  itobi(9223372036854775808, &b);
+  for (int i = 0; i < 1000000000; i++)
+    bigUInt_add(&a, &b, &a);
 
+  char* str;
+  printf("%s\n", str = bitostr(a));
+  free(str);
+
+  bigUInt_destroy(a);
+  bigUInt_destroy(b);
+  
+  return 0;
+}
+
+#ifdef DEBUG_MODE
+void __debug()
+{
+  bigUInt_t* a = bigUInt_init();
+  bigUInt_t* b = bigUInt_init();
+
+  // 연산 결과 128비트 (덧셈)
+  itobi(18446744073709551615, &a);
+  itobi(100, &b);
+  bigUInt_mul(&a, &b, &a);
   char* str = 0;
   str = bitostr(a);
   printf("%s\n", str);
+  // 27,670,116,110,564,327,423
+
+  // 연산 결과 64비트 (덧셈)
+  itobi(9223372036854775808, &a);
+  itobi(100000000000000, &b);
+  bigUInt_bit_shr(&a, 3, &a);
+  str = 0;
+  str = bitostr(a);
+  printf("%s\n", str);
+  // 9223472036854775808
+
+  // 연산 결과 128비트 (곱셈)
+  itobi(9223372036854775808, &a);
+  itobi(9223372036854775808, &b);
+  bigUInt_mul(&a, &b, &a);
+  str = 0;
+  str = bitostr(a);
+  printf("%s\n", str);
+  // 8.5070591730234615865843651857942e+37
+
+  // 연산 결과 64비트 (곱셈)
+  itobi(100000000000, &a);
+  itobi(1000, &b);
+  bigUInt_mul(&a, &b, &a);
+  str = 0;
+  str = bitostr(a);
+  printf("%s\n", str);
+  // 100000000000000
 
   free(str);
-  
   /*
   bigUInt_t* a = bigUInt_init();
   char mod;
@@ -564,5 +601,5 @@ int main()
   bigUInt_div_by_10(&a, &mod);
   bigUInt_div_by_10(&a, &mod);
   */
-  return 0;
 }
+#endif

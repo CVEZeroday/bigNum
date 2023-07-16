@@ -116,7 +116,6 @@
 
   __bigUInt_dec endp
 
-  ; 비트 시프트는 아직 오류있는거 같아서 주석 안닮
   __bigUInt_bit_shl proc
     xor rbx, rbx
 
@@ -135,7 +134,7 @@
       je _end_shl
       mov r10, [rdx+rbx*8]
       shl r10, 1
-      or r10, 1
+      inc r10
       mov [rdx+rbx*8], r10
       inc rbx
       jc _loop_shl_cf
@@ -165,9 +164,11 @@
       je _end_shr
       mov rax, [rdx+rbx*8]
       shr r10, 1
+      pushfq
       mov rax, 1
       shl rax, 63
       or r10, rax
+      popfq
       mov [rdx+rbx*8], r10
       inc rbx
       jc _loop_shr_cf

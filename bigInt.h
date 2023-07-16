@@ -5,8 +5,12 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#define DEBUG_MODE 1
+#define DEBUG() if(DEBUG_MODE) __debug();
+
 #define BIN2DEC_COEFFICIENT 19.26591972
 // log10(2) * 64
+
 //#define uint64_t unsigned long long
 
 /**
@@ -169,8 +173,9 @@ char* bitostr(bigUInt_t* num);
 // bigUInt to int64_t
 int64_t bitoi(bigUInt_t* num);
 
-// bigUInt 출력 가능한 printf 재정의
-int bi_printf(const char* format, ...);
+#ifdef DEBUG_MODE
+void __debug();
+#endif
 
 #ifdef __cplusplus
 }
