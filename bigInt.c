@@ -5,39 +5,44 @@
 #include <math.h>
 #include "bigInt.h"
 
-// ¾ğ´õ¹Ù (_) ÇÑ°³ÀÎ º¯¼öµéÀº ´Ù Áö¿ªº¯¼öµéÀÓ
-// ¾ğ´õ¹Ù (_) µÎ°³Â¥¸® º¯¼öµéÀº ·¹Áö½ºÅÍ º¯¼öÀÓ
-// ¾ğ´õ¹Ù (_) µÎ°³Â¥¸® ÇÔ¼öµéÀº ´Ù ¾î¼Àºí¸®¾î ÇÔ¼öÀÓ
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#define MAX_TRIPLE(a, b, c) MAX((a), MAX((b), (c)))
+#define MIN_TRIPLE(a, b, c) MIN((a), MIN((b), (c)))
 
-// ÇÔ¼öµé¿¡ ´ëÇÑ ¼³¸íÀº bigInt.h ÆÄÀÏ¿¡ ½á³õÀ½
-// bigUInt_init, bigUInt_destroy, bigUInt_resize¸¦ Á¦¿ÜÇÑ ¸ğµç ÇÔ¼öµéÀº ÀÔ·ÂÀ» bigUInt_t**·Î ¹ŞÀ½ (Æ÷ÀÎÅÍÀÇ Æ÷ÀÎÅÍ)
-// ±×·¡¼­ c++·Î ¿¬»êÀÚ ±¸ÇöÇÒ ¶§ ¿¬»êÀÚ ÁÂ¿ì¿¡ ÀÖ´Â º¯¼öÀÇ ÀÚ·áÇüÀº bigUInt_t* °¡ µÇ¾î¾ß ÇÔ (bigUInt Æ÷ÀÎÅÍ)
-// ¿¹½Ã:
+// ì–¸ë”ë°” (_) í•œê°œì¸ ë³€ìˆ˜ë“¤ì€ ë‹¤ ì§€ì—­ë³€ìˆ˜ë“¤ì„
+// ì–¸ë”ë°” (_) ë‘ê°œì§œë¦¬ ë³€ìˆ˜ë“¤ì€ ë ˆì§€ìŠ¤í„° ë³€ìˆ˜ì„
+// ì–¸ë”ë°” (_) ë‘ê°œì§œë¦¬ í•¨ìˆ˜ë“¤ì€ ë‹¤ ì–´ì…ˆë¸”ë¦¬ì–´ í•¨ìˆ˜ì„
+
+// í•¨ìˆ˜ë“¤ì— ëŒ€í•œ ì„¤ëª…ì€ bigInt.h íŒŒì¼ì— ì¨ë†“ìŒ
+// bigUInt_init, bigUInt_destroy, bigUInt_resizeë¥¼ ì œì™¸í•œ ëª¨ë“  í•¨ìˆ˜ë“¤ì€ ì…ë ¥ì„ bigUInt_t**ë¡œ ë°›ìŒ (í¬ì¸í„°ì˜ í¬ì¸í„°)
+// ê·¸ë˜ì„œ c++ë¡œ ì—°ì‚°ì êµ¬í˜„í•  ë•Œ ì—°ì‚°ì ì¢Œìš°ì— ìˆëŠ” ë³€ìˆ˜ì˜ ìë£Œí˜•ì€ bigUInt_t* ê°€ ë˜ì–´ì•¼ í•¨ (bigUInt í¬ì¸í„°)
+// ì˜ˆì‹œ:
 // 
 // bigUInt_t* a = bigUInt_init();
 // bigUInt_t* b = bigUInt_init();
 // bigUInt_t* c = bigUInt_init();
 // c = a + b;
 // 
-// ÀÌ·¸°Ô »ç¿ëÇÒ ¼ö ÀÖµµ·Ï ±¸ÇöµÇ¾î¾ß ÇÔ
-// ±×´Ï±î À§ ½Ä¿¡¼­ °¢ ¿¬»êÀÚµéÀÌ ¾î¶»°Ô ÀÛµ¿ÇØ¾ß ÇÏ³Ä¸é
+// ì´ë ‡ê²Œ ì‚¬ìš©í•  ìˆ˜ ìˆë„ë¡ êµ¬í˜„ë˜ì–´ì•¼ í•¨
+// ê·¸ë‹ˆê¹Œ ìœ„ ì‹ì—ì„œ ê° ì—°ì‚°ìë“¤ì´ ì–´ë–»ê²Œ ì‘ë™í•´ì•¼ í•˜ëƒë©´
 // 
-// operator+ ´Â 
+// operator+ ëŠ” 
 // bigUInt_t* temp = bigUInt_init();
 // bigUInt_add(&a, &b, &temp);
 // return temp;
 // 
-// ÀÌ·¸°Ô ÀÛµ¿ÇØ¾ß ÇÏ°í
+// ì´ë ‡ê²Œ ì‘ë™í•´ì•¼ í•˜ê³ 
 // 
-// operator= ´Â
+// operator= ëŠ”
 // bigUInt_t(&c, &temp);
 // return c;
 // 
-// ÀÌ·¸°Ô ÀÛµ¿ÇØ¾ß ÇÔ
+// ì´ë ‡ê²Œ ì‘ë™í•´ì•¼ í•¨
 
 bigUInt_t* bigUInt_init()
 {
-  // _tmp¿¡´Ù°¡ ¸Ş¸ğ¸® ÇÒ´çÇÏ°í ÃÊ±â°ª ÁöÁ¤ÇÔ
+  // _tmpì—ë‹¤ê°€ ë©”ëª¨ë¦¬ í• ë‹¹í•˜ê³  ì´ˆê¸°ê°’ ì§€ì •í•¨
   bigUInt_t* _tmp = malloc(sizeof(bigUInt_t) + 9);
   if (_tmp == NULL)
   {
@@ -50,20 +55,20 @@ bigUInt_t* bigUInt_init()
 
 void bigUInt_destroy(bigUInt_t* num)
 {
-  // ¸Å°³º¯¼ö·Î ¹ŞÀº numÀ» free ½ÃÄÑ¼­ ¸Ş¸ğ¸®¸¦ ¿î¿µÃ¼Á¦¿¡ ¹İÈ¯ÇÔ
+  // ë§¤ê°œë³€ìˆ˜ë¡œ ë°›ì€ numì„ free ì‹œì¼œì„œ ë©”ëª¨ë¦¬ë¥¼ ìš´ì˜ì²´ì œì— ë°˜í™˜í•¨
   free(num);
   num = NULL;
 }
 
 bigUInt_t* bigUInt_resize(bigUInt_t* a, uint64_t size)
 {
-  // reallocÀ¸·Î ¸Ş¸ğ¸® »çÀÌÁî ´Ã¸²
+  // reallocìœ¼ë¡œ ë©”ëª¨ë¦¬ ì‚¬ì´ì¦ˆ ëŠ˜ë¦¼
   bigUInt_t* _tmp = realloc(a, sizeof(bigUInt_t) + size * 8 + 1);
   if (_tmp == NULL)
   {
     return NULL;
   }
-  // »õ·Î ÇÒ´ç¹ŞÀº °ø°£¿¡ ¾²·¹±â °ªµéÀ» 0À¸·Î ÃÊ±âÈ­ÇÔ
+  // ìƒˆë¡œ í• ë‹¹ë°›ì€ ê³µê°„ì— ì“°ë ˆê¸° ê°’ë“¤ì„ 0ìœ¼ë¡œ ì´ˆê¸°í™”í•¨
   if (size > _tmp->len)
   {
     memset(_tmp->nums + _tmp->len, 0, (size - _tmp->len) * 8);
@@ -79,13 +84,13 @@ void bigUInt_add(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
 {
   register uint64_t _max_len = MAX_TRIPLE((*a)->len, (*b)->len, (*dest)->len);
   
-  // ¸¸¾à ¸Ç À§ÂÊ ºñÆ®°¡ 1ÀÌ¸é µ¡¼ÀÀ» ÇßÀ»¶§ nums ¹è¿­ÀÌ ÇÏ³ª°¡ ´õ ÀÖ¾î¾ß ÇÏ¹Ç·Î ÃÖ´ë ±æÀÌ + 1·Î ±æÀÌ¸¦ ´Ã·ÁÁÜ
+  // ë§Œì•½ ë§¨ ìœ„ìª½ ë¹„íŠ¸ê°€ 1ì´ë©´ ë§ì…ˆì„ í–ˆì„ë•Œ nums ë°°ì—´ì´ í•˜ë‚˜ê°€ ë” ìˆì–´ì•¼ í•˜ë¯€ë¡œ ìµœëŒ€ ê¸¸ì´ + 1ë¡œ ê¸¸ì´ë¥¼ ëŠ˜ë ¤ì¤Œ
   if ((_max_len == (*a)->len) && ((*a)->nums[(*a)->len - 1] & 0x8000000000000000))
     *a = bigUInt_resize(*a, ++_max_len);
   if ((_max_len == (*b)->len) && ((*b)->nums[(*b)->len - 1] & 0x8000000000000000))
     *b = bigUInt_resize(*b, ++_max_len);
 
-  // °¡Àå ±æÀÌ°¡ ±ä ¼ö¿¡ ´Ù¸¥ µÎ ¼öÀÇ ±æÀÌ¸¦ ¸ÂÃã
+  // ê°€ì¥ ê¸¸ì´ê°€ ê¸´ ìˆ˜ì— ë‹¤ë¥¸ ë‘ ìˆ˜ì˜ ê¸¸ì´ë¥¼ ë§ì¶¤
   if (_max_len > (*b)->len)
     *b = bigUInt_resize(*b, _max_len);
   if (_max_len > (*a)->len)
@@ -93,15 +98,15 @@ void bigUInt_add(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
   if (_max_len > (*dest)->len)
     *dest = bigUInt_resize(*dest, _max_len);
 
-  // ¾î¼Àºí¸®¾î µ¡¼À ÇÔ¼ö È£Ãâ
+  // ì–´ì…ˆë¸”ë¦¬ì–´ ë§ì…ˆ í•¨ìˆ˜ í˜¸ì¶œ
   __bigUInt_add(_max_len, (*a)->nums, (*b)->nums, (*dest)->nums);
 }
 
 // -
 void bigUInt_sub(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
 {
-  // a < b ÀÌ¸é dest¸¦ 0À¸·Î ¸¸µé°í ¸®ÅÏ
-  // unsigned Á¤¼ö¶ó¼­ À½¼ö°¡ µÇ¸é ¿ÀÀÛµ¿ÇÔ
+  // a < b ì´ë©´ destë¥¼ 0ìœ¼ë¡œ ë§Œë“¤ê³  ë¦¬í„´
+  // unsigned ì •ìˆ˜ë¼ì„œ ìŒìˆ˜ê°€ ë˜ë©´ ì˜¤ì‘ë™í•¨
   if (bigUInt_less(a, b))
   {
     for (int i = 0; i < (*dest)->len; i++)
@@ -109,7 +114,7 @@ void bigUInt_sub(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
     return;
   }
 
-  // °¡Àå ±æÀÌ°¡ ±ä ¼ö¿¡ ´Ù¸¥ µÎ ¼öÀÇ ±æÀÌ¸¦ ¸ÂÃã
+  // ê°€ì¥ ê¸¸ì´ê°€ ê¸´ ìˆ˜ì— ë‹¤ë¥¸ ë‘ ìˆ˜ì˜ ê¸¸ì´ë¥¼ ë§ì¶¤
   register uint64_t _max_len = MAX_TRIPLE((*a)->len, (*b)->len, (*dest)->len);
   if (_max_len > (*b)->len)
     *b = bigUInt_resize(*b, _max_len);
@@ -118,14 +123,15 @@ void bigUInt_sub(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
   if (_max_len > (*dest)->len)
     *dest = bigUInt_resize(*dest, _max_len);
 
-  // ¾î¼Àºí¸®¾î »¬¼À ÇÔ¼ö È£Ãâ
+  // ì–´ì…ˆë¸”ë¦¬ì–´ ëº„ì…ˆ í•¨ìˆ˜ í˜¸ì¶œ
   __bigUInt_sub(_max_len, (*a)->nums, (*b)->nums, (*dest)->nums);
 }
+
 // *
 void bigUInt_mul(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
 {
   uint64_t _n = 0;
-  // ¾Ë°í¸®Áò»ó a¿Í b¸¦ ºñÆ®½ÃÇÁÆ® ÇØ¾ßÇÏ´Âµ¥ ±×·¯¸é a¿Í bÀÇ °ªÀÌ ¹Ù²î¾î ¹ö¸®¹Ç·Î _a¿Í _b¿¡ º¹»çÇØ¼­ °è»ê
+  // ì•Œê³ ë¦¬ì¦˜ìƒ aì™€ bë¥¼ ë¹„íŠ¸ì‹œí”„íŠ¸ í•´ì•¼í•˜ëŠ”ë° ê·¸ëŸ¬ë©´ aì™€ bì˜ ê°’ì´ ë°”ë€Œì–´ ë²„ë¦¬ë¯€ë¡œ _aì™€ _bì— ë³µì‚¬í•´ì„œ ê³„ì‚°
   bigUInt_t* _a = bigUInt_init();
   bigUInt_t* _b = bigUInt_init();
   bigUInt_t* _dest = bigUInt_init();
@@ -133,11 +139,11 @@ void bigUInt_mul(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
   bigUInt_assign(&_b, b);
   bigUInt_assign(&_dest, dest);
   
-  // dest ÃÊ±âÈ­
+  // dest ì´ˆê¸°í™”
   _dest = bigUInt_resize(_dest, 1);
   _dest->nums[0] = 0;
 
-  // °ö¼À ¾Ë°í¸®Áò
+  // ê³±ì…ˆ ì•Œê³ ë¦¬ì¦˜
   while (bigUInt_n_zero(&_b))
   {
     if (_b->nums[0] & 1)
@@ -150,11 +156,12 @@ void bigUInt_mul(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
   }
   bigUInt_assign(dest, &_dest);
 
-  // _a¿Í _b ¸Ş¸ğ¸® ¹İÈ¯
+  // _aì™€ _b ë©”ëª¨ë¦¬ ë°˜í™˜
   bigUInt_destroy(_a);
   bigUInt_destroy(_b);
   bigUInt_destroy(_dest);
 }
+
 // /
 bool bigUInt_div_cmp_helper(bigUInt_t** a, bigUInt_t** b, uint64_t len)
 {
@@ -170,6 +177,7 @@ bool bigUInt_div_cmp_helper(bigUInt_t** a, bigUInt_t** b, uint64_t len)
   }
   return 0;
 }
+
 void bigUInt_div(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
 {
   uint64_t _max_len = MAX((*a)->len, (*b)->len);
@@ -192,6 +200,7 @@ void bigUInt_div(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
 
   bigUInt_destroy(_a);
 }
+
 // Division function only for binary to decimal (fast)
 void bigUInt_div_by_10(bigUInt_t** a, char* mod)
 {
@@ -209,6 +218,7 @@ void bigUInt_div_by_10(bigUInt_t** a, char* mod)
   *mod = (*a)->nums[len];
   *a = bigUInt_resize(*a, len);
 }
+
 // %
 void bigUInt_mod(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
 {
@@ -237,18 +247,18 @@ void bigUInt_mod(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
 // ++
 void bigUInt_inc(bigUInt_t** a)
 {
-  // µ¡¼ÀÃ³·³ ¸¸¾à ¸Ç Ã¹¹øÂ° ºñÆ®°¡ 1ÀÌ¸é numsÀÇ ±æÀÌ¸¦ ÇÑÄ­ ´Ã·ÁÁÜ
+  // ë§ì…ˆì²˜ëŸ¼ ë§Œì•½ ë§¨ ì²«ë²ˆì§¸ ë¹„íŠ¸ê°€ 1ì´ë©´ numsì˜ ê¸¸ì´ë¥¼ í•œì¹¸ ëŠ˜ë ¤ì¤Œ
   if ((*a)->nums[(*a)->len - 1] & 0x8000000000000000)
     *a = bigUInt_resize(*a, (*a)->len+1);
 
-  // ¾î¼Àºí¸®¾î increase ÇÔ¼ö È£Ãâ
+  // ì–´ì…ˆë¸”ë¦¬ì–´ increase í•¨ìˆ˜ í˜¸ì¶œ
   __bigUInt_inc((*a)->len, (*a)->nums);
 }
 
 // --
 void bigUInt_dec(bigUInt_t** a)
 {
-  // ¾î¼Àºí¸®¾î decrease ÇÔ¼ö È£Ãâ
+  // ì–´ì…ˆë¸”ë¦¬ì–´ decrease í•¨ìˆ˜ í˜¸ì¶œ
   __bigUInt_dec((*a)->len, (*a)->nums);
 }
 
@@ -258,51 +268,51 @@ void bigUInt_dec(bigUInt_t** a)
 bool bigUInt_eq(bigUInt_t** a, bigUInt_t** b)
 {
   uint64_t _max_len = MAX((*a)->len, (*b)->len);
-  // µÑ Áß ´õ ±ä bigUIntÀÇ len°ª¸¸Å­ ¹İº¹
+  // ë‘˜ ì¤‘ ë” ê¸´ bigUIntì˜ lenê°’ë§Œí¼ ë°˜ë³µ
   for (uint64_t i = 0; i < _max_len; i++)
   {
-    // ¹è¿­ ±æÀÌº¸´Ù Å« i°ªÀÌ µé¾î°¡Áö ¾Êµµ·Ï i°¡ lenº¸´Ù ÀÛÀº °æ¿ì¿¡¸¸ __a¿Í __b¿¡ °ªÀ» ÇÒ´ç (i°¡ lenº¸´Ù Å©°Å³ª °°¾ÆÁö¸é ±âº»°ª 0ÀÎ »óÅÂ·Î ºñ±³)
+    // ë°°ì—´ ê¸¸ì´ë³´ë‹¤ í° iê°’ì´ ë“¤ì–´ê°€ì§€ ì•Šë„ë¡ iê°€ lenë³´ë‹¤ ì‘ì€ ê²½ìš°ì—ë§Œ __aì™€ __bì— ê°’ì„ í• ë‹¹ (iê°€ lenë³´ë‹¤ í¬ê±°ë‚˜ ê°™ì•„ì§€ë©´ ê¸°ë³¸ê°’ 0ì¸ ìƒíƒœë¡œ ë¹„êµ)
     register uint64_t __a = 0;
     register uint64_t __b = 0;
     if (i < (*a)->len) __a = (*a)->nums[i];
     if (i < (*b)->len) __b = (*b)->nums[i];
-    // ¸¸¾à a¿Í b°¡ ÇÑ±ºµ¥¶óµµ ´Ù¸£¸é ¹Ù·Î Áß´ÜÇÏ°í 0À» ¸®ÅÏ
+    // ë§Œì•½ aì™€ bê°€ í•œêµ°ë°ë¼ë„ ë‹¤ë¥´ë©´ ë°”ë¡œ ì¤‘ë‹¨í•˜ê³  0ì„ ë¦¬í„´
     if (__a != __b)
       return 0;
   }
-  // ¸ğµÎ °°¾Æ¼­ ¹İº¹¹®¿¡¼­ ¸®ÅÏµÇÁö ¾ÊÀ¸¸é 1À» ¸®ÅÏ
+  // ëª¨ë‘ ê°™ì•„ì„œ ë°˜ë³µë¬¸ì—ì„œ ë¦¬í„´ë˜ì§€ ì•Šìœ¼ë©´ 1ì„ ë¦¬í„´
   return 1;
 }
 bool bigUInt_eq_num(bigUInt_t** a, uint64_t b)
 {
-  // Ã¹¹øÂ° nums¿Í b ºñ±³ÇØ¼­ ´Ù¸£¸é 0 ¸®ÅÏ
+  // ì²«ë²ˆì§¸ numsì™€ b ë¹„êµí•´ì„œ ë‹¤ë¥´ë©´ 0 ë¦¬í„´
   if ((*a)->nums[0] != b)
     return 0;
-  // °°À¸¸é µÚÂÊ numsµéÀÌ ¸ğµÎ 0ÀÎÁö È®ÀÎ
+  // ê°™ìœ¼ë©´ ë’¤ìª½ numsë“¤ì´ ëª¨ë‘ 0ì¸ì§€ í™•ì¸
   for (uint64_t i = 0; i < (*a)->len; i++)
   {
-    // ¸¸¾à µÚÂÊ numsµé Áß¿¡ 0ÀÌ ¾Æ´Ñ °ªÀÌ ÀÖÀ¸¸é a != bÀÌ¹Ç·Î 0 ¸®ÅÏ
+    // ë§Œì•½ ë’¤ìª½ numsë“¤ ì¤‘ì— 0ì´ ì•„ë‹Œ ê°’ì´ ìˆìœ¼ë©´ a != bì´ë¯€ë¡œ 0 ë¦¬í„´
     if ((*a)->nums[0] & 0xffffffffffffffff)
       return 0;
   }
-  // µÚÂÊ numsµéÀÌ ¸ğµÎ 0ÀÌ¸é a==bÀÌ¹Ç·Î 1 ¸®ÅÏ
+  // ë’¤ìª½ numsë“¤ì´ ëª¨ë‘ 0ì´ë©´ a==bì´ë¯€ë¡œ 1 ë¦¬í„´
   return 1;
 }
 
 // !=
 bool bigUInt_neq(bigUInt_t** a, bigUInt_t** b)
 {
-  // !(a==b) ÀÎ°ÅÀÓ
+  // !(a==b) ì¸ê±°ì„
   return !bigUInt_eq(a, b);
 }
 // >
 bool bigUInt_greater(bigUInt_t** a, bigUInt_t** b)
 {
   uint64_t _max_len = MAX((*a)->len, (*b)->len);
-  // µÑ Áß ´õ ±ä bigUIntÀÇ len°ª¸¸Å­ ¹İº¹
+  // ë‘˜ ì¤‘ ë” ê¸´ bigUIntì˜ lenê°’ë§Œí¼ ë°˜ë³µ
   for (uint64_t i = _max_len; i > 0; i--)
   {
-    // ¹è¿­ ±æÀÌº¸´Ù Å« i°ªÀÌ µé¾î°¡Áö ¾Êµµ·Ï i°¡ lenº¸´Ù ÀÛÀº °æ¿ì¿¡¸¸ __a¿Í __b¿¡ °ªÀ» ÇÒ´ç (i°¡ lenº¸´Ù Å©°Å³ª °°¾ÆÁö¸é ±âº»°ª 0ÀÎ »óÅÂ·Î ºñ±³)
+    // ë°°ì—´ ê¸¸ì´ë³´ë‹¤ í° iê°’ì´ ë“¤ì–´ê°€ì§€ ì•Šë„ë¡ iê°€ lenë³´ë‹¤ ì‘ì€ ê²½ìš°ì—ë§Œ __aì™€ __bì— ê°’ì„ í• ë‹¹ (iê°€ lenë³´ë‹¤ í¬ê±°ë‚˜ ê°™ì•„ì§€ë©´ ê¸°ë³¸ê°’ 0ì¸ ìƒíƒœë¡œ ë¹„êµ)
     register uint64_t __a = 0;
     register uint64_t __b = 0;
     if (i-1 < (*a)->len) __a = (*a)->nums[i-1];
@@ -313,6 +323,7 @@ bool bigUInt_greater(bigUInt_t** a, bigUInt_t** b)
   }
   return 0;
 }
+
 // <
 bool bigUInt_less(bigUInt_t** a, bigUInt_t** b)
 {
@@ -329,6 +340,7 @@ bool bigUInt_less(bigUInt_t** a, bigUInt_t** b)
   }
   return 0;
 }
+
 // >=
 bool bigUInt_greater_eq(bigUInt_t** a, bigUInt_t** b)
 {
@@ -345,6 +357,7 @@ bool bigUInt_greater_eq(bigUInt_t** a, bigUInt_t** b)
   }
   return 1;
 }
+
 // <=
 bool bigUInt_less_eq(bigUInt_t** a, bigUInt_t** b)
 {
@@ -369,29 +382,32 @@ bool bigUInt_n_zero(bigUInt_t** a)
 {
   for (uint64_t i = 0; i < (*a)->len; i++)
   {
-    // ¸ğµç ¼ö¸¦ °Ë»ç ÇÏ¸é¼­ ¾î¶² ºñÆ®µç 1ÀÌ ÀÖÀ¸¸é 1 ¸®ÅÏ
+    // ëª¨ë“  ìˆ˜ë¥¼ ê²€ì‚¬ í•˜ë©´ì„œ ì–´ë–¤ ë¹„íŠ¸ë“  1ì´ ìˆìœ¼ë©´ 1 ë¦¬í„´
     if ((*a)->nums[i] & 0xffffffffffffffff)
       return 1;
   }
-  // 1ÀÎ ºñÆ®°¡ ÇÏ³ªµµ ¾øÀ¸¸é 0 ¸®ÅÏ
+  // 1ì¸ ë¹„íŠ¸ê°€ í•˜ë‚˜ë„ ì—†ìœ¼ë©´ 0 ë¦¬í„´
   return 0;
 }
+
 // &&
 bool bigUInt_and(bigUInt_t** a, bigUInt_t** b)
 {
-  // ¼³¸í ¾ÈÇÒ·¡
+  // ì„¤ëª… ì•ˆí• ë˜
   return bigUInt_n_zero(a) && bigUInt_n_zero(b);
 }
+
 // ||
 bool bigUInt_or(bigUInt_t** a, bigUInt_t** b)
 {
-  // ¼³¸í ¾ÈÇÒ·¡22
+  // ì„¤ëª… ì•ˆí• ë˜22
   return bigUInt_n_zero(a) || bigUInt_n_zero(b);
 }
+
 // !
 bool bigUInt_not(bigUInt_t** a)
 {
-  // ¼³¸í ¾ÈÇÒ·¡333
+  // ì„¤ëª… ì•ˆí• ë˜333
   return !bigUInt_n_zero(a);
 }
 
@@ -402,61 +418,66 @@ void bigUInt_bit_and(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
 {
   for (uint64_t i = 0; i < (*a)->len; i++)
   {
-    // ¸ğµç nums¿¡ ´ëÇØ & ¿¬»ê
+    // ëª¨ë“  numsì— ëŒ€í•´ & ì—°ì‚°
     (*dest)->nums[i] = (*a)->nums[i] & (*b)->nums[i];
   }
 }
+
 // |
 void bigUInt_bit_or(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
 {
   for (uint64_t i = 0; i < (*a)->len; i++)
   {
-    // ¸ğµç nums¿¡ ´ëÇØ | ¿¬»ê
+    // ëª¨ë“  numsì— ëŒ€í•´ | ì—°ì‚°
     (*dest)->nums[i] = (*a)->nums[i] | (*b)->nums[i];
   }
 }
+
 // ^
 void bigUInt_bit_xor(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest)
 {
   for (uint64_t i = 0; i < (*a)->len; i++)
   {
-    // ¸ğµç nums¿¡ ´ëÇØ ^ ¿¬»ê
+    // ëª¨ë“  numsì— ëŒ€í•´ ^ ì—°ì‚°
     (*dest)->nums[i] = (*a)->nums[i] ^ (*b)->nums[i];
   }
 }
+
 // ~
 void bigUInt_bit_not(bigUInt_t** a, bigUInt_t** dest)
 {
   for (uint64_t i = 0; i < (*a)->len; i++)
   {
-    // ¸ğµç nums¿¡ ´ëÇØ ~ ¿¬»ê
+    // ëª¨ë“  numsì— ëŒ€í•´ ~ ì—°ì‚°
     (*dest)->nums[i] = ~((*a)->nums[i]);
   } 
 }
+
 // <<
 void bigUInt_bit_shl(bigUInt_t** a, uint64_t b, bigUInt_t** dest)
 {
-  // a°¡ 0ÀÌ¸é ¹«ÇÑ¹İº¹ÀÌ ÀÏ¾î³ª¼­ ÀÌ¸¦ ¹æÁö
+  // aê°€ 0ì´ë©´ ë¬´í•œë°˜ë³µì´ ì¼ì–´ë‚˜ì„œ ì´ë¥¼ ë°©ì§€
   if (!bigUInt_n_zero(a)) return;
 
   bigUInt_t* _a = bigUInt_init();
   bigUInt_assign(&_a, a);
 
-  // b¹ø ¹İº¹
+  // bë²ˆ ë°˜ë³µ
   for (uint64_t i = 0; i < b; i++)
   {
     if (_a->nums[_a->len - 1] & 0x8000000000000000)
       _a = bigUInt_resize(_a, _a->len + 1);
-    // ¾î¼Àºí¸®¾î shl ÇÔ¼ö È£Ãâ (dest = a << 1);
+    // ì–´ì…ˆë¸”ë¦¬ì–´ shl í•¨ìˆ˜ í˜¸ì¶œ (dest = a << 1);
     __bigUInt_bit_shl(_a->len, _a->nums);
   }
   bigUInt_assign(dest, &_a);
   bigUInt_destroy(_a);
 }
+
 // >>
 void bigUInt_bit_shr(bigUInt_t** a, uint64_t b, bigUInt_t** dest)
 {
-  // a°¡ 0ÀÌ¸é ¹«ÇÑ¹İº¹ÀÌ ÀÏ¾î³ª¼­ ÀÌ¸¦ ¹æÁö
+  // aê°€ 0ì´ë©´ ë¬´í•œë°˜ë³µì´ ì¼ì–´ë‚˜ì„œ ì´ë¥¼ ë°©ì§€
   if (!bigUInt_n_zero(a)) return;
 
   bigUInt_t* _a = bigUInt_init();
@@ -464,7 +485,7 @@ void bigUInt_bit_shr(bigUInt_t** a, uint64_t b, bigUInt_t** dest)
 
   for (uint64_t i = 0; i < b; i++)
   {
-    // ¾î¼Àºí¸®¾î shr ÇÔ¼ö È£Ãâ (dest = a >> 1);
+    // ì–´ì…ˆë¸”ë¦¬ì–´ shr í•¨ìˆ˜ í˜¸ì¶œ (dest = a >> 1);
     __bigUInt_bit_shr(_a->len, _a->nums);
   }
   bigUInt_assign(dest, &_a);
@@ -474,31 +495,31 @@ void bigUInt_bit_shr(bigUInt_t** a, uint64_t b, bigUInt_t** dest)
 // =
 void bigUInt_assign(bigUInt_t** a, bigUInt_t** b)
 {
-  // a¿Í bÀÇ Å©±â¸¦ ¸ÂÃã
+  // aì™€ bì˜ í¬ê¸°ë¥¼ ë§ì¶¤
   if ((*a)->len < (*b)->len)
   {
     *a = bigUInt_resize(*a, (*b)->len);
   }
-  // a¿¡´Ù°¡ b°ª º¹»çÇÔ
+  // aì—ë‹¤ê°€ bê°’ ë³µì‚¬í•¨
   memcpy((*a)->nums, (*b)->nums, (*b)->len * 8);
 }
 
 /* utilities */
 
 // int64_t to bigUInt
-int itobi(int64_t num, bigUInt_t** dest)
+void bigUInt_assign_num(bigUInt_t** dest, int64_t num)
 {
   if ((*dest)->len > 1)
   {
-    // a Å©±â 1·Î ¼³Á¤
+    // a í¬ê¸° 1ë¡œ ì„¤ì •
     *dest = bigUInt_resize(*dest, 1);
   }
-  // a¿¡´Ù°¡ b ´ëÀÔ
+  // aì—ë‹¤ê°€ b ëŒ€ì…
   (*dest)->nums[0] = num;
 }
 
 // bigUInt to string, must free() returned pointer after use
-char* bitostr(bigUInt_t* num)
+char* bigUInt_toString(bigUInt_t* num)
 {
   uint64_t _size = (uint64_t)ceil(BIN2DEC_COEFFICIENT * num->len);
   uint64_t _cnt = _size;
@@ -522,7 +543,7 @@ char* bitostr(bigUInt_t* num)
 }
 
 // bigUInt to int64_t
-int64_t bitoi(bigUInt_t* num)
+uint64_t bigUInt_toUInt(bigUInt_t* num)
 {
   if (num->len != 1) return 0xffffffffffffffff;
   return num->nums[0];
@@ -533,13 +554,13 @@ int main()
   //DEBUG();
   bigUInt_t* a = bigUInt_init();
   bigUInt_t* b = bigUInt_init();
-  itobi(18446744073709551615, &a);
-  itobi(9223372036854775808, &b);
-  for (int i = 0; i < 1000000000; i++)
-    bigUInt_add(&a, &b, &a);
+  bigUInt_assign_num(&a, 18446744073709551615);
+  bigUInt_assign_num(&b, 9223372036854775808);
+  //for (int i = 0; i < 100000; i++)
+    bigUInt_add(&a, &b, &a); // a += b;
 
-  char* str;
-  printf("%s\n", str = bitostr(a));
+  char* str = bigUInt_toString(a);
+  printf("%s\n", str);
   free(str);
 
   bigUInt_destroy(a);
@@ -554,52 +575,42 @@ void __debug()
   bigUInt_t* a = bigUInt_init();
   bigUInt_t* b = bigUInt_init();
 
-  // ¿¬»ê °á°ú 128ºñÆ® (µ¡¼À)
-  itobi(18446744073709551615, &a);
-  itobi(100, &b);
+  // ì—°ì‚° ê²°ê³¼ 128ë¹„íŠ¸ (ë§ì…ˆ)
+  bigUInt_assign_num(&a, 18446744073709551615ULL);
+  bigUInt_assign_num(&b, 100);
   bigUInt_mul(&a, &b, &a);
   char* str = 0;
-  str = bitostr(a);
+  str = bigUInt_toString(a);
   printf("%s\n", str);
   // 27,670,116,110,564,327,423
 
-  // ¿¬»ê °á°ú 64ºñÆ® (µ¡¼À)
-  itobi(9223372036854775808, &a);
-  itobi(100000000000000, &b);
+  // ì—°ì‚° ê²°ê³¼ 64ë¹„íŠ¸ (ë§ì…ˆ)
+  bigUInt_assign_num(&a, 9223372036854775808ULL);
+  bigUInt_assign_num(&b, 100000000000000);
   bigUInt_bit_shr(&a, 3, &a);
   str = 0;
-  str = bitostr(a);
+  str = bigUInt_toString(a);
   printf("%s\n", str);
   // 9223472036854775808
 
-  // ¿¬»ê °á°ú 128ºñÆ® (°ö¼À)
-  itobi(9223372036854775808, &a);
-  itobi(9223372036854775808, &b);
+  // ì—°ì‚° ê²°ê³¼ 128ë¹„íŠ¸ (ê³±ì…ˆ)
+  bigUInt_assign_num(&a, 9223372036854775808ULL);
+  bigUInt_assign_num(&b, 9223372036854775808ULL);
   bigUInt_mul(&a, &b, &a);
   str = 0;
-  str = bitostr(a);
+  str = bigUInt_toString(a);
   printf("%s\n", str);
   // 8.5070591730234615865843651857942e+37
 
-  // ¿¬»ê °á°ú 64ºñÆ® (°ö¼À)
-  itobi(100000000000, &a);
-  itobi(1000, &b);
+  // ì—°ì‚° ê²°ê³¼ 64ë¹„íŠ¸ (ê³±ì…ˆ)
+  bigUInt_assign_num(&a, 100000000000);
+  bigUInt_assign_num(&b, 1000);
   bigUInt_mul(&a, &b, &a);
   str = 0;
-  str = bitostr(a);
+  str = bigUInt_toString(a);
   printf("%s\n", str);
   // 100000000000000
 
   free(str);
-  /*
-  bigUInt_t* a = bigUInt_init();
-  char mod;
-  a = bigUInt_resize(a, 2);
-  a->nums[0] = 1231325615;
-  a->nums[1] = 1253252353525325;
-  bigUInt_div_by_10(&a, &mod);
-  bigUInt_div_by_10(&a, &mod);
-  bigUInt_div_by_10(&a, &mod);
-  */
 }
 #endif

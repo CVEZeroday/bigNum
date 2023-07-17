@@ -8,10 +8,19 @@
 #define DEBUG_MODE 1
 #define DEBUG() if(DEBUG_MODE) __debug();
 
+#define KARATSUBA_THRESHOLD 8
 #define BIN2DEC_COEFFICIENT 19.26591972
 // log10(2) * 64
 
 //#define uint64_t unsigned long long
+
+
+extern void __bigUInt_add(uint64_t, void*, void*, void*);
+extern void __bigUInt_sub(uint64_t, void*, void*, void*);
+extern void __bigUInt_inc(uint64_t, void*);
+extern void __bigUInt_dec(uint64_t, void*);
+extern void __bigUInt_bit_shl(uint64_t, void*);
+extern void __bigUInt_bit_shr(uint64_t, void*);
 
 /**
  * ENVIRONMENT DETECTION
@@ -44,35 +53,33 @@
   #define NOT_SUPPORTED_ARCHITECTURE
 #endif
 
-// ÃÖ´ñ°ª, ÃÖ¼Ú°ª ±¸ÇÏ´Â ¸ÅÅ©·Î
-#define MAX(a, b) ((a) > (b) ? (a) : (b))
-#define MIN(a, b) ((a) < (b) ? (a) : (b))
-#define MAX_TRIPLE(a, b, c) MAX((a), MAX((b), (c)))
-#define MIN_TRIPLE(a, b, c) MIN((a), MIN((b), (c)))
-
-/* bigUInt_s structure definition */
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-// bigUInt ±¸Á¶Ã¼ Á¤ÀÇ
-// len Àº nums ¹è¿­ÀÇ ±æÀÌÀÌ°í, nums´Â ¸Þ¸ð¸®°¡ ¾ó¸¶¸¸Å­ ÇÒ´çµÇ³Ä¿¡ µû¶ó °¡º¯ÀûÀ¸·Î ±æÀÌ°¡ º¯ÇÔ
-// nums[0] ºÎÅÍ nums[1], nums[2], ... ·Î ÁøÇàµÉ¼ö·Ï ³ôÀº ÀÚ¸´¼öÀÓ
+/* bigUInt_s structure definition */
+
+// bigUInt êµ¬ì¡°ì²´ ì •ì˜
+// len ì€ nums ë°°ì—´ì˜ ê¸¸ì´ì´ê³ , numsëŠ” ë©”ëª¨ë¦¬ê°€ ì–¼ë§ˆë§Œí¼ í• ë‹¹ë˜ëƒì— ë”°ë¼ ê°€ë³€ì ìœ¼ë¡œ ê¸¸ì´ê°€ ë³€í•¨
+// nums[0] ë¶€í„° nums[1], nums[2], ... ë¡œ ì§„í–‰ë ìˆ˜ë¡ ë†’ì€ ìžë¦¿ìˆ˜ìž„
 typedef struct bigUInt_s {
   uint64_t len;
   uint64_t nums[];
 } bigUInt_t;
 
-#define bigUInt bigUInt_t*
+// ìµœëŒ“ê°’, ìµœì†Ÿê°’ êµ¬í•˜ëŠ” ë§¤í¬ë¡œ
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#define MAX_TRIPLE(a, b, c) MAX((a), MAX((b), (c)))
+#define MIN_TRIPLE(a, b, c) MIN((a), MIN((b), (c)))
 
-
-// ¾Æ·¡´Â ÇÔ¼ö ÇÁ·ÎÅäÅ¸ÀÔµéÀÓ
-// bigUInt¿¡ »õ·Î ¸Þ¸ð¸® ÇÒ´çÇÏ´Â ÇÔ¼ö
+// ì•„ëž˜ëŠ” í•¨ìˆ˜ í”„ë¡œí† íƒ€ìž…ë“¤ìž„
+// bigUIntì— ìƒˆë¡œ ë©”ëª¨ë¦¬ í• ë‹¹í•˜ëŠ” í•¨ìˆ˜
 bigUInt_t* bigUInt_init();
-// bigUInt¿¡ ÇÒ´çÇß´ø ¸Þ¸ð¸® freeÇÏ´Â ÇÔ¼ö
+// bigUIntì— í• ë‹¹í–ˆë˜ ë©”ëª¨ë¦¬ freeí•˜ëŠ” í•¨ìˆ˜
 void bigUInt_destroy(bigUInt_t* num);
-// bigUInt ±æÀÌ ´Ã¸®°Å³ª ÁÙÀÌ±â
+// bigUInt ê¸¸ì´ ëŠ˜ë¦¬ê±°ë‚˜ ì¤„ì´ê¸°
 bigUInt_t* bigUInt_resize(bigUInt_t* a, uint64_t size);
 
 /* Arithmetic Operators */
@@ -123,7 +130,7 @@ bool bigUInt_less_eq(bigUInt_t** a, bigUInt_t** b);
 
 /* Logical Operators */
 
-// a°¡ 0ÀÌ¸é 0 ¹ÝÈ¯, ¾Æ´Ï¸é 1 ¹ÝÈ¯
+// aê°€ 0ì´ë©´ 0 ë°˜í™˜, ì•„ë‹ˆë©´ 1 ë°˜í™˜
 bool bigUInt_n_zero(bigUInt_t** a);
 // &&
 // return a && b
@@ -151,27 +158,25 @@ void bigUInt_bit_xor(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest);
 void bigUInt_bit_not(bigUInt_t** a, bigUInt_t** dest);
 // <<
 // dest = a << b
-// b´Â 64ºñÆ® Á¤¼öÀÓ (bigUInt ¾Æ´Ô)
+// bëŠ” 64ë¹„íŠ¸ ì •ìˆ˜ìž„ (bigUInt ì•„ë‹˜)
 void bigUInt_bit_shl(bigUInt_t** a, uint64_t b, bigUInt_t** dest);
 // >>
 // dest = a >> b
-// b´Â 64ºñÆ® Á¤¼öÀÓ (bigUInt ¾Æ´Ô)
+// bëŠ” 64ë¹„íŠ¸ ì •ìˆ˜ìž„ (bigUInt ì•„ë‹˜)
 void bigUInt_bit_shr(bigUInt_t** a, uint64_t b, bigUInt_t** dest);
 
 // =
 // a = b
 void bigUInt_assign(bigUInt_t** a, bigUInt_t** b);
-// a = b
-// b´Â 64ºñÆ® Á¤¼öÀÓ (bigUInt ¾Æ´Ô)
 
 /* utilities */
 
 // int64_t to bigUInt
-int itobi(int64_t num, bigUInt_t** dest);
+void bigUInt_assign_num(bigUInt_t** dest, int64_t num);
 // bigUInt to string
-char* bitostr(bigUInt_t* num);
-// bigUInt to int64_t
-int64_t bitoi(bigUInt_t* num);
+char* bigUInt_toString(bigUInt_t* num);
+// bigUInt to uint64_t
+uint64_t bigUInt_toUInt(bigUInt_t* num);
 
 #ifdef DEBUG_MODE
 void __debug();
