@@ -1,8 +1,12 @@
-﻿  bigInt.c
-D:\bigNum\bigInt.c(1,1): warning C4819: 현재 코드 페이지(949)에서 표시할 수 없는 문자가 파일에 들어 있습니다. 데이터가 손실되지 않게 하려면 해당 파일을 유니코드 형식으로 저장하십시오.
-D:\bigNum\bigInt.h(1,1): warning C4819: 현재 코드 페이지(949)에서 표시할 수 없는 문자가 파일에 들어 있습니다. 데이터가 손실되지 않게 하려면 해당 파일을 유니코드 형식으로 저장하십시오.
-D:\bigNum\bigInt.h(1,9): warning C4068: 알 수 없는 pragma 'GCC'
-D:\bigNum\bigInt.c(208,25): warning C4244: '=': 'uint64_t'에서 'char'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\bigNum\bigInt.c(295): warning C4716: 'bigUInt_neq': 값을 반환해야 합니다.
-D:\bigNum\bigInt.c(385): warning C4716: 'bigUInt_and': 값을 반환해야 합니다.
+﻿  Assembling bigInt_win64.asm...
+  bigInt.c
+D:\bigNum\bigInt.h(1,9): warning C4068: unknown pragma 'GCC'
+D:\bigNum\bigInt.c(97,3): warning C4013: '__bigUInt_add' undefined; assuming extern returning int
+D:\bigNum\bigInt.c(122,3): warning C4013: '__bigUInt_sub' undefined; assuming extern returning int
+D:\bigNum\bigInt.c(209,20): warning C4244: '=': conversion from 'uint64_t' to 'char', possible loss of data
+D:\bigNum\bigInt.c(245,3): warning C4013: '__bigUInt_inc' undefined; assuming extern returning int
+D:\bigNum\bigInt.c(252,3): warning C4013: '__bigUInt_dec' undefined; assuming extern returning int
+D:\bigNum\bigInt.c(451,5): warning C4013: '__bigUInt_bit_shl' undefined; assuming extern returning int
+D:\bigNum\bigInt.c(468,5): warning C4013: '__bigUInt_bit_shr' undefined; assuming extern returning int
+D:\bigNum\bigInt.c(498): warning C4716: 'itobi': must return a value
   bigNum.vcxproj -> D:\bigNum\x64\Debug\bigNum.exe
