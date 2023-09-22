@@ -1,104 +1,104 @@
 .code
-  ; bigUInt_add ÇÔ¼ö
+  ; bigUInt_add í•¨ìˆ˜
   __bigUInt_add proc
     mov r11, r9
     clc
     
-    ; nums[0]ºÎÅÍ nums[³¡] ±îÁö ¹İº¹ (carry°¡ ¹ß»ıÇÏ¸é _loop_cf_add·Î Á¡ÇÁ, carry°¡ ¹ß»ı ¾ÈÇÏ¸é _loop_ncf_add·Î Á¡ÇÁ)
+    ; nums[0]ë¶€í„° nums[ë] ê¹Œì§€ ë°˜ë³µ (carryê°€ ë°œìƒí•˜ë©´ _loop_cf_addë¡œ ì í”„, carryê°€ ë°œìƒ ì•ˆí•˜ë©´ _loop_ncf_addë¡œ ì í”„)
     xor rbx, rbx
-    _loop_ncf_add:
+    .loop_ncf_add:
       cmp rbx, rcx
-      je _end_add
+      je .end_add
       mov r10, [rdx+rbx*8]
       add r10, [r8+rbx*8]
       mov [r9+rbx*8], r10
       inc rbx
-      jc _loop_cf_add
-      jmp _loop_ncf_add
+      jc .loop_cf_add
+      jmp .loop_ncf_add
 
-    _loop_cf_add:
+    .loop_cf_add:
       cmp rbx, rcx
-      je _end_add
+      je .end_add
       mov r10, [rdx+rbx*8]
       adc r10, [r8+rbx*8]
       mov [r9+rbx*8], r10
       inc rbx
-      jc _loop_cf_add
-      jmp _loop_ncf_add
+      jc .loop_cf_add
+      jmp .loop_ncf_add
 
-    ; °è»ê ÈÄ¿¡ dest°¡ °¡¸®Å°´ø Æ÷ÀÎÅÍ À§Ä¡ º¹±¸
-    _end_add:
+    ; ê³„ì‚° í›„ì— destê°€ ê°€ë¦¬í‚¤ë˜ í¬ì¸í„° ìœ„ì¹˜ ë³µêµ¬
+    .end_add:
       mov r9, r11
       xor rax, rax
       ret
 
   __bigUInt_add endp
 
-  ; bigUInt_add ÇÔ¼ö
+  ; bigUInt_add í•¨ìˆ˜
   __bigUInt_sub proc
     mov r11, r9
     clc
     
-    ; nums[0]ºÎÅÍ nums[³¡] ±îÁö ¹İº¹ (carry°¡ ¹ß»ıÇÏ¸é _loop_cf_add·Î Á¡ÇÁ, carry°¡ ¹ß»ı ¾ÈÇÏ¸é _loop_ncf_add·Î Á¡ÇÁ)
+    ; nums[0]ë¶€í„° nums[ë] ê¹Œì§€ ë°˜ë³µ (carryê°€ ë°œìƒí•˜ë©´ _loop_cf_addë¡œ ì í”„, carryê°€ ë°œìƒ ì•ˆí•˜ë©´ _loop_ncf_addë¡œ ì í”„)
     xor rbx, rbx
-    _loop_ncf_sub:
+    .loop_ncf_sub:
       cmp rbx, rcx
-      je _end_sub
+      je .end_sub
       mov r10, [rdx+rbx*8]
       sub r10, [r8+rbx*8]
       mov [r9+rbx*8], r10
       inc rbx
-      jc _loop_cf_sub
-      jmp _loop_ncf_sub
+      jc .loop_cf_sub
+      jmp .loop_ncf_sub
 
-    _loop_cf_sub:
+    .loop_cf_sub:
       cmp rbx, rcx
-      je _end_sub
+      je .end_sub
       mov r10, [rdx+rbx*8]
       dec r10
       sub r10, [r8+rbx*8]
       mov [r9+rbx*8], r10
       inc rbx
-      jc _loop_cf_sub
-      jmp _loop_ncf_sub
+      jc .loop_cf_sub
+      jmp .loop_ncf_sub
 
-    ; °è»ê ÈÄ¿¡ dest°¡ °¡¸®Å°´ø Æ÷ÀÎÅÍ À§Ä¡ º¹±¸
-    _end_sub:
+    ; ê³„ì‚° í›„ì— destê°€ ê°€ë¦¬í‚¤ë˜ í¬ì¸í„° ìœ„ì¹˜ ë³µêµ¬
+    .end_sub:
       mov r9, r11
       xor rax, rax
       ret
 
   __bigUInt_sub endp
 
-  ; bigUInt_inc ÇÔ¼ö
+  ; bigUInt_inc í•¨ìˆ˜
   __bigUInt_inc proc
-    ; nums[0]ºÎÅÍ nums[³¡] ±îÁö inc ¸í·É¾î ¹İº¹
+    ; nums[0]ë¶€í„° nums[ë] ê¹Œì§€ inc ëª…ë ¹ì–´ ë°˜ë³µ
     xor rbx, rbx
-    _loop_inc:
+    .loop_inc:
       cmp rbx, rcx
-      je _end_inc
+      je .end_inc
       mov r10, [rdx+rbx*8]
       inc r10
       mov [rdx+rbx*8], r10
       inc rbx
-      jc _loop_inc
-      jmp _end_inc
+      jc .loop_inc
+      jmp .end_inc
     
-    ; ¸®ÅÏ°ª 0À¸·Î ¹Ù²Ù°í ¸®ÅÏ
-    _end_inc:
+    ; ë¦¬í„´ê°’ 0ìœ¼ë¡œ ë°”ê¾¸ê³  ë¦¬í„´
+    .end_inc:
       xor rax, rax
       ret
 
   __bigUInt_inc endp
 
-  ; bigUInt_dec ÇÔ¼ö
+  ; bigUInt_dec í•¨ìˆ˜
   __bigUInt_dec proc
     xor rbx, rbx
 
-    ; nums[0]ºÎÅÍ nums[³¡] ±îÁö inc ¸í·É¾î ¹İº¹
-    _loop_dec:
+    ; nums[0]ë¶€í„° nums[ë] ê¹Œì§€ inc ëª…ë ¹ì–´ ë°˜ë³µ
+    .loop_dec:
       cmp rbx, rcx
-      je _end_dec
+      je .end_dec
       mov r10, [rdx+rbx*8]
       dec r10
       mov [rdx+rbx*8], r10
@@ -106,11 +106,11 @@
       xor rax, rax
       not rax
       cmp r10, rax
-      je _loop_dec
-      jmp _end_dec
+      je .loop_dec
+      jmp .end_dec
 
-    ; ¸®ÅÏ°ª 0À¸·Î ¹Ù²Ù°í ¸®ÅÏ
-    _end_dec:
+    ; ë¦¬í„´ê°’ 0ìœ¼ë¡œ ë°”ê¾¸ê³  ë¦¬í„´
+    .end_dec:
       xor rax, rax
       ret
 
@@ -119,28 +119,28 @@
   __bigUInt_bit_shl proc
     xor rbx, rbx
 
-    _loop_shl_ncf:
+    .loop_shl_ncf:
       cmp rbx, rcx
-      je _end_shl
+      je .end_shl
       mov r10, [rdx+rbx*8]
       shl r10, 1
       mov [rdx+rbx*8], r10
       inc rbx
-      jc _loop_shl_cf
-      jmp _loop_shl_ncf
+      jc .loop_shl_cf
+      jmp .loop_shl_ncf
 
-    _loop_shl_cf:
+    .loop_shl_cf:
       cmp rbx, rcx
-      je _end_shl
+      je .end_shl
       mov r10, [rdx+rbx*8]
       shl r10, 1
       inc r10
       mov [rdx+rbx*8], r10
       inc rbx
-      jc _loop_shl_cf
-      jmp _loop_shl_ncf
+      jc .loop_shl_cf
+      jmp .loop_shl_ncf
 
-    _end_shl:
+    .end_shl:
       xor rax, rax
       ret
     
@@ -149,19 +149,19 @@
   __bigUInt_bit_shr proc
     xor rbx, rbx
 
-    _loop_shr_ncf:
+    .loop_shr_ncf:
       cmp rbx, rcx
-      je _end_shr
+      je .end_shr
       mov r10, [rdx+rbx*8]
       shr r10, 1
       mov [rdx+rbx*8], r10
       inc rbx
-      jc _loop_shr_cf
-      jmp _loop_shr_ncf
+      jc .loop_shr_cf
+      jmp .loop_shr_ncf
 
-    _loop_shr_cf:
+    .loop_shr_cf:
       cmp rbx, rcx
-      je _end_shr
+      je .end_shr
       mov rax, [rdx+rbx*8]
       shr r10, 1
       pushfq
@@ -171,10 +171,10 @@
       popfq
       mov [rdx+rbx*8], r10
       inc rbx
-      jc _loop_shr_cf
-      jmp _loop_shr_ncf
+      jc .loop_shr_cf
+      jmp .loop_shr_ncf
 
-    _end_shr:
+    .end_shr:
       xor rax, rax
       ret
     
