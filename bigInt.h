@@ -17,8 +17,7 @@
  * ENVIRONMENT DETECTION
  * Supported Architecture and Environment
  * Windows: MSVC only
- * Linux: GCC only
- * supported architecture: AMD64, i386, aarch64
+ * supported architecture: AMD64
 **/
 #if defined(__linux__) && defined(__GNUC__)
   #ifdef __amd64__
@@ -44,7 +43,7 @@
   #define NOT_SUPPORTED_ARCHITECTURE
 #endif
 
-// ÃÖ´ñ°ª, ÃÖ¼Ú°ª ±¸ÇÏ´Â ¸ÅÅ©·Î
+// ìµœëŒ“ê°’, ìµœì†Ÿê°’ êµ¬í•˜ëŠ” ë§¤í¬ë¡œ
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #define MAX_TRIPLE(a, b, c) MAX((a), MAX((b), (c)))
@@ -56,9 +55,9 @@
 extern "C" {
 #endif
 
-// bigUInt ±¸Á¶Ã¼ Á¤ÀÇ
-// len Àº nums ¹è¿­ÀÇ ±æÀÌÀÌ°í, nums´Â ¸Ş¸ğ¸®°¡ ¾ó¸¶¸¸Å­ ÇÒ´çµÇ³Ä¿¡ µû¶ó °¡º¯ÀûÀ¸·Î ±æÀÌ°¡ º¯ÇÔ
-// nums[0] ºÎÅÍ nums[1], nums[2], ... ·Î ÁøÇàµÉ¼ö·Ï ³ôÀº ÀÚ¸´¼öÀÓ
+// bigUInt êµ¬ì¡°ì²´ ì •ì˜
+// len ì€ nums ë°°ì—´ì˜ ê¸¸ì´ì´ê³ , numsëŠ” ë©”ëª¨ë¦¬ê°€ ì–¼ë§ˆë§Œí¼ í• ë‹¹ë˜ëƒì— ë”°ë¼ ê°€ë³€ì ìœ¼ë¡œ ê¸¸ì´ê°€ ë³€í•¨
+// nums[0] ë¶€í„° nums[1], nums[2], ... ë¡œ ì§„í–‰ë ìˆ˜ë¡ ë†’ì€ ìë¦¿ìˆ˜ì„
 typedef struct bigUInt_s {
   uint64_t len;
   uint64_t nums[];
@@ -67,12 +66,12 @@ typedef struct bigUInt_s {
 #define bigUInt bigUInt_t*
 
 
-// ¾Æ·¡´Â ÇÔ¼ö ÇÁ·ÎÅäÅ¸ÀÔµéÀÓ
-// bigUInt¿¡ »õ·Î ¸Ş¸ğ¸® ÇÒ´çÇÏ´Â ÇÔ¼ö
+// ì•„ë˜ëŠ” í•¨ìˆ˜ í”„ë¡œí† íƒ€ì…ë“¤ì„
+// bigUIntì— ìƒˆë¡œ ë©”ëª¨ë¦¬ í• ë‹¹í•˜ëŠ” í•¨ìˆ˜
 bigUInt_t* bigUInt_init();
-// bigUInt¿¡ ÇÒ´çÇß´ø ¸Ş¸ğ¸® freeÇÏ´Â ÇÔ¼ö
+// bigUIntì— í• ë‹¹í–ˆë˜ ë©”ëª¨ë¦¬ freeí•˜ëŠ” í•¨ìˆ˜
 void bigUInt_destroy(bigUInt_t* num);
-// bigUInt ±æÀÌ ´Ã¸®°Å³ª ÁÙÀÌ±â
+// bigUInt ê¸¸ì´ ëŠ˜ë¦¬ê±°ë‚˜ ì¤„ì´ê¸°
 bigUInt_t* bigUInt_resize(bigUInt_t* a, uint64_t size);
 
 /* Arithmetic Operators */
@@ -123,7 +122,7 @@ bool bigUInt_less_eq(bigUInt_t** a, bigUInt_t** b);
 
 /* Logical Operators */
 
-// a°¡ 0ÀÌ¸é 0 ¹İÈ¯, ¾Æ´Ï¸é 1 ¹İÈ¯
+// aê°€ 0ì´ë©´ 0 ë°˜í™˜, ì•„ë‹ˆë©´ 1 ë°˜í™˜
 bool bigUInt_n_zero(bigUInt_t** a);
 // &&
 // return a && b
@@ -151,18 +150,18 @@ void bigUInt_bit_xor(bigUInt_t** a, bigUInt_t** b, bigUInt_t** dest);
 void bigUInt_bit_not(bigUInt_t** a, bigUInt_t** dest);
 // <<
 // dest = a << b
-// b´Â 64ºñÆ® Á¤¼öÀÓ (bigUInt ¾Æ´Ô)
+// bëŠ” 64ë¹„íŠ¸ ì •ìˆ˜ì„ (bigUInt ì•„ë‹˜)
 void bigUInt_bit_shl(bigUInt_t** a, uint64_t b, bigUInt_t** dest);
 // >>
 // dest = a >> b
-// b´Â 64ºñÆ® Á¤¼öÀÓ (bigUInt ¾Æ´Ô)
+// bëŠ” 64ë¹„íŠ¸ ì •ìˆ˜ì„ (bigUInt ì•„ë‹˜)
 void bigUInt_bit_shr(bigUInt_t** a, uint64_t b, bigUInt_t** dest);
 
 // =
 // a = b
 void bigUInt_assign(bigUInt_t** a, bigUInt_t** b);
 // a = b
-// b´Â 64ºñÆ® Á¤¼öÀÓ (bigUInt ¾Æ´Ô)
+// bëŠ” 64ë¹„íŠ¸ ì •ìˆ˜ì„ (bigUInt ì•„ë‹˜)
 
 /* utilities */
 
